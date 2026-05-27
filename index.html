@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Hearthkeeper</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ── LOADING ─────────────────────────────────────────────────────────── -->
+<div id="loading-screen">
+  <span style="font-size:48px">🏰</span>
+  <div class="loading-title">The Hearthkeeper</div>
+  <div class="spinner"></div>
+</div>
+
+<!-- ── AUTH ────────────────────────────────────────────────────────────── -->
+<div id="auth-screen" style="display:none">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <span class="auth-icon">🏰</span>
+      <h1>The Hearthkeeper</h1>
+      <p>A quest to keep the home.</p>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="auth-tab"        onclick="switchAuthTab('register')">Register</button>
+    </div>
+
+    <div id="login-form">
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="your@email.com">
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••"
+               onkeydown="if(event.key==='Enter') doLogin()">
+      </div>
+      <button class="auth-submit" onclick="doLogin()">Enter the Keep</button>
+    </div>
+
+    <div id="register-form" style="display:none">
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="reg-email" placeholder="your@email.com">
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <input type="password" id="reg-password" placeholder="At least 6 characters"
+               onkeydown="if(event.key==='Enter') doRegister()">
+      </div>
+      <button class="auth-submit" onclick="doRegister()">Begin the Journey</button>
+    </div>
+
+    <div class="auth-error" id="auth-error"></div>
+  </div>
+</div>
+
+<!-- ── CHARACTER SELECT ─────────────────────────────────────────────────── -->
+<div id="char-screen" style="display:none">
+  <div class="char-screen-inner">
+    <h1>Choose Your Hearthkeeper</h1>
+    <p>Your character will grow with you as you tend your home. Choose wisely — this is who you are.</p>
+    <div class="char-grid" id="char-grid"></div>
+    <button class="char-confirm-btn" id="char-confirm-btn" disabled onclick="confirmCharacter()">
+      Begin My Journey
+    </button>
+  </div>
+</div>
+
+<!-- ── MAIN APP ─────────────────────────────────────────────────────────── -->
+<div id="app">
+
+  <!-- Header -->
+  <div class="app-header">
+    <div class="header-char">
+      <div class="header-avatar" id="header-avatar">🌿</div>
+      <div>
+        <div class="header-name"  id="header-name">Hearthkeeper</div>
+        <div class="header-title" id="header-title">Apprentice</div>
+      </div>
+    </div>
+
+    <button class="lore-bell" id="lore-bell" onclick="openLoreBell()" title="New lore unlocked!">
+      📜
+    </button>
+
+    <div class="header-xp-block">
+      <div class="header-xp-label">Level <span id="header-level">1</span></div>
+      <div class="header-xp-num" id="header-xp">0 XP</div>
+      <div class="header-xp-bar-wrap">
+        <div class="header-xp-bar-bg">
+          <div class="header-xp-bar-fill" id="header-xp-bar" style="width:0%"></div>
+        </div>
+        <div class="header-xp-next" id="header-xp-next"></div>
+      </div>
+    </div>
+
+    <button class="signout-btn" onclick="doSignOut()">Sign out</button>
+  </div>
+
+  <!-- Nav -->
+  <nav class="app-nav">
+    <button class="nav-btn active"  onclick="switchTab('quests')">⚔️ Quests</button>
+    <button class="nav-btn"         onclick="switchTab('add')">✨ Add Quest</button>
+    <button class="nav-btn"         onclick="switchTab('keep')">🏰 Keep</button>
+    <button class="nav-btn"         onclick="switchTab('lore')">📜 Lore</button>
+    <button class="nav-btn"         onclick="switchTab('history')">📖 History</button>
+  </nav>
+
+  <!-- Content -->
+  <div class="app-content">
+
+    <!-- QUESTS TAB -->
+    <div class="tab-panel active" id="tab-quests">
+      <div class="progress-section">
+        <div class="prog-row">
+          <span class="prog-label"  id="prog-label">Level 1 → 2</span>
+          <div  class="prog-bg"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+          <span class="prog-count"  id="prog-count">0 / 200 XP</span>
+        </div>
+      </div>
+      <div id="quest-board"></div>
+    </div>
+
+    <!-- ADD QUEST TAB -->
+    <div class="tab-panel" id="tab-add">
+      <div class="add-quest-form">
+        <h2>✨ Custom Quest</h2>
+        <p>Describe a one-off task and the oracle will determine its worth in XP.</p>
+        <div class="ai-info-box">
+          🔮 The quest's XP reward is decided by the ancient AI oracle based on effort and difficulty — you need not choose it yourself.
+        </div>
+        <div class="form-field">
+          <label>Quest name <span style="font-weight:400;color:var(--brown)">(optional — fantasy flavour welcome)</span></label>
+          <input type="text" id="custom-name" placeholder="e.g. The Great Wardrobe Reckoning">
+        </div>
+        <div class="form-field">
+          <label>Describe the actual task</label>
+          <textarea id="custom-desc" placeholder="e.g. Sort through my entire wardrobe, donate clothes I no longer wear, and reorganise everything by season."></textarea>
+        </div>
+        <button class="submit-btn" id="custom-submit-btn" onclick="submitCustomQuest()">
+          Submit to the Oracle ✨
+        </button>
+        <div class="custom-result" id="custom-result"></div>
+      </div>
+
+      <div class="suggested-box">
+        <h2>📋 Suggested Quests</h2>
+        <p>Common household quests. Add the ones that apply to your keep.</p>
+        <div id="suggested-quests-list"></div>
+      </div>
+    </div>
+
+    <!-- KEEP TAB -->
+    <div class="tab-panel" id="tab-keep">
+      <h2 class="tab-title">Your Keep</h2>
+      <p class="tab-subtitle">The state of your home, as seen by those who dwell within it.</p>
+      <div class="keep-grid" id="keep-grid"></div>
+    </div>
+
+    <!-- LORE TAB -->
+    <div class="tab-panel" id="tab-lore">
+      <h2 class="tab-title">The Chronicle</h2>
+      <p class="tab-subtitle">Your story, as it unfolds.</p>
+      <div id="lore-list"></div>
+    </div>
+
+    <!-- HISTORY TAB -->
+    <div class="tab-panel" id="tab-history">
+      <h2 class="tab-title">Quest History</h2>
+      <p class="tab-subtitle">Every quest completed. Every hearth defended.</p>
+      <div id="history-list"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── LEVEL-UP OVERLAY ─────────────────────────────────────────────────── -->
+<div class="overlay" id="levelup-overlay" style="display:none">
+  <div class="overlay-box">
+    <span class="overlay-icon" id="levelup-icon">🎉</span>
+    <h2 id="levelup-heading">Level Up!</h2>
+    <div class="overlay-subtitle" id="levelup-title"></div>
+    <div class="overlay-body"     id="levelup-body"></div>
+    <button class="overlay-close" onclick="closeLevelUp()">Onward!</button>
+  </div>
+</div>
+
+<!-- ── LORE OVERLAY ─────────────────────────────────────────────────────── -->
+<div class="overlay" id="lore-overlay" style="display:none">
+  <div class="overlay-box">
+    <span class="overlay-icon">📜</span>
+    <h2 id="lore-overlay-title">A New Chapter</h2>
+    <div class="overlay-subtitle" id="lore-overlay-subtitle"></div>
+    <div class="overlay-body"     id="lore-overlay-body"></div>
+    <button class="overlay-close" onclick="closeLoreOverlay()">Close the Scroll</button>
+  </div>
+</div>
+
+<!-- ── SCRIPTS ──────────────────────────────────────────────────────────── -->
+<script src="lore.js"></script>
+<script src="data.js"></script>
+
+<script type="module">
+  import { initializeApp }                            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword,
+           signInWithEmailAndPassword, signOut,
+           onAuthStateChanged }                       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc }        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyAC7U9OwcmX8-U8p5Xt8dNOg0G58ivq3F8",
+    authDomain:        "hearthkeeper-a3e14.firebaseapp.com",
+    projectId:         "hearthkeeper-a3e14",
+    storageBucket:     "hearthkeeper-a3e14.firebasestorage.app",
+    messagingSenderId: "472034793288",
+    appId:             "1:472034793288:web:4bb5f447f3697ac609857d"
+  };
+
+  const fbApp  = initializeApp(firebaseConfig);
+  const fbAuth = getAuth(fbApp);
+  const fbDb   = getFirestore(fbApp);
+
+  window.fbAuth       = fbAuth;
+  window.fbDb         = fbDb;
+  window.fbDoc        = doc;
+  window.fbGetDoc     = getDoc;
+  window.fbSetDoc     = setDoc;
+  window.fbSignIn     = signInWithEmailAndPassword;
+  window.fbCreateUser = createUserWithEmailAndPassword;
+  window.fbSignOut    = () => signOut(fbAuth);
+
+  onAuthStateChanged(fbAuth, (user) => {
+    if (window.onAuthReady) window.onAuthReady(user);
+  });
+</script>
+
+<script src="app.js"></script>
+
+</body>
+</html>
