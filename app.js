@@ -290,7 +290,7 @@ window.switchTab = function(tab) {
 function renderQuestBoard() {
   const board = document.getElementById("quest-board");
   if (!board||!gameData) return;
-  const hint = `<div class="quest-hint-bar">You can add more quests in the <button class="hint-link" onclick="switchTab('add')">Add Quest</button> tab.</div>`;
+  const hint = `<div class="quest-hint-bar">You can add and manage quests in the <button class="hint-link" onclick="switchTab('add')">Manage Quests</button> tab.</div>`;
   if (!gameData.quests.length) { board.innerHTML = hint+`<div class="empty-state">No quests yet.</div>`; return; }
 
   const overdue  = gameData.quests.filter(q=>daysOverdue(q)!==null);
@@ -316,6 +316,7 @@ function renderQuestBoard() {
       <div class="quest-menu-wrap">
         <button class="quest-menu-btn" data-id="${q.id}">⋯</button>
         <div class="quest-menu-dropdown" id="menu-${q.id}">
+          <button class="quest-menu-item" data-id="${q.id}" onclick="openFreqEditor('${q.id}')">🔁 Change frequency</button>
           <button class="quest-menu-item delete" data-id="${q.id}">🗑 Remove quest</button>
         </div>
       </div>
@@ -581,6 +582,66 @@ window.toggleXPTooltip = function(e) {
   const t=document.getElementById("xp-tooltip");
   t.classList.toggle("visible");
   document.addEventListener("click",()=>t.classList.remove("visible"),{once:true});
+};
+
+// ── FREQUENCY EDITOR ──────────────────────────────────────────────────────
+window.openFreqEditor = function(questId) {
+  // Close any open menus
+  document.querySelectorAll(".quest-menu-dropdown.open").forEach(d => d.classList.remove("open"));
+
+  const quest = gameData.quests.find(q => q.id === questId);
+  if (!quest) return;
+
+  // Remove any existing editor
+  document.getElementById("freq-editor-overlay")?.remove();
+
+  const options = [
+    { value:"one-off",      label:"One-off",       days:0   },
+    { value:"daily",        label:"Daily",         days:1   },
+    { value:"twice-weekly", label:"Twice a week",  days:3   },
+    { value:"weekly",       label:"Weekly",        days:7   },
+    { value:"fortnightly",  label:"Every 2 weeks", days:14  },
+    { value:"monthly",      label:"Monthly",       days:30  },
+    { value:"quarterly",    label:"Every 3 months",days:90  },
+    { value:"biannual",     label:"Every 6 months",days:180 },
+    { value:"yearly",       label:"Yearly",        days:365 },
+  ];
+
+  const optionsHtml = options.map(o =>
+    `<option value="${o.value}" ${quest.freq === o.value ? "selected" : ""}>${o.label}</option>`
+  ).join("");
+
+  const overlay = document.createElement("div");
+  overlay.className = "overlay";
+  overlay.id = "freq-editor-overlay";
+  overlay.innerHTML = `
+    <div class="overlay-box" style="max-width:380px">
+      <h2 style="font-size:20px;margin-bottom:6px">Change Frequency</h2>
+      <div class="overlay-subtitle" style="margin-bottom:18px">${quest.fantasy}</div>
+      <div class="form-field">
+        <label>How often?</label>
+        <select id="freq-editor-select">${optionsHtml}</select>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button class="overlay-close" onclick="saveFreq('${questId}')">Save</button>
+        <button class="settings-btn" onclick="document.getElementById('freq-editor-overlay').remove()">Cancel</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+};
+
+window.saveFreq = async function(questId) {
+  const quest = gameData.quests.find(q => q.id === questId);
+  if (!quest) return;
+  const select = document.getElementById("freq-editor-select");
+  const freq   = select.value;
+  const days   = { "one-off":0,"daily":1,"twice-weekly":3,"weekly":7,
+    "fortnightly":14,"monthly":30,"quarterly":90,"biannual":180,"yearly":365 }[freq] || 0;
+  quest.freq     = freq;
+  quest.freqDays = days;
+  document.getElementById("freq-editor-overlay").remove();
+  await saveGameData();
+  renderQuestBoard();
 };
 
 // ── BOOTSTRAP ─────────────────────────────────────────────────────────────
