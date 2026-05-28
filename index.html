@@ -130,20 +130,45 @@
     <div class="tab-panel" id="tab-add">
       <div class="add-quest-form">
         <h2>✨ Custom Quest</h2>
-        <p>Describe a one-off task and the oracle will determine its worth in XP.</p>
-        <div class="ai-info-box">
-          🔮 The quest's XP reward is decided by the ancient AI oracle based on effort and difficulty — you need not choose it yourself.
-        </div>
+        <p>Name your quest and choose how often it recurs.</p>
+
         <div class="form-field">
-          <label>Quest name <span style="font-weight:400;color:var(--brown)">(optional — fantasy flavour welcome)</span></label>
-          <input type="text" id="custom-name" placeholder="e.g. The Great Wardrobe Reckoning">
+          <label>What's the task?</label>
+          <input type="text" id="custom-name" placeholder="e.g. Clean out wardrobe"
+                 onkeydown="if(event.key==='Enter') submitCustomQuest()">
         </div>
-        <div class="form-field">
-          <label>Describe the actual task</label>
-          <textarea id="custom-desc" placeholder="e.g. Sort through my entire wardrobe, donate clothes I no longer wear, and reorganise everything by season."></textarea>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label>How often?</label>
+            <select id="custom-freq">
+              <option value="one-off">One-off</option>
+              <option value="daily">Daily</option>
+              <option value="twice-weekly">Twice a week</option>
+              <option value="weekly">Weekly</option>
+              <option value="fortnightly">Every 2 weeks</option>
+              <option value="monthly">Monthly</option>
+              <option value="quarterly">Every 3 months</option>
+              <option value="biannual">Every 6 months</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>
+              XP reward
+              <span class="xp-tooltip-wrap">
+                <button class="xp-tooltip-btn" onclick="toggleXPTooltip(event)" type="button">?</button>
+                <span class="xp-tooltip-box" id="xp-tooltip">
+                  The XP reward is decided by an AI oracle based on how much effort your task requires. You don't need to set it yourself.
+                </span>
+              </span>
+            </label>
+            <input type="text" value="Decided by the oracle" disabled style="color:var(--brown);font-style:italic;">
+          </div>
         </div>
+
         <button class="submit-btn" id="custom-submit-btn" onclick="submitCustomQuest()">
-          Submit to the Oracle ✨
+          Add Quest ✨
         </button>
         <div class="custom-result" id="custom-result"></div>
       </div>

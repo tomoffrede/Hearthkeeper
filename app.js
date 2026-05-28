@@ -2,10 +2,17 @@
 // auth, db, and firebase functions are attached to window by index.html
 
 // ── STATE ────────────────────────────────────────────────────────────────
-let currentUser = null;
-let gameData    = null;
+let currentUser     = null;
+let gameData        = null;
 let pendingLevelUps = [];
 let pendingLore     = [];
+
+// Holds the last custom quest input so retry doesn't lose data
+let lastCustomQuest = { name: "", freq: "one-off", freqDays: 0 };
+
+// ── DEFAULT QUESTS PRE-LOADED FOR NEW USERS ───────────────────────────────
+const DEFAULT_STARTER_IDS = ["q1", "q4", "q7", "q9", "q12", "q3"];
+// dishes, tidy halls, vacuum, toilet, bed linens, trash
 
 // ── HELPERS ──────────────────────────────────────────────────────────────
 function daysSince(ts) {
@@ -54,16 +61,15 @@ function xpToNextLevel(xp, level) {
 
 // ── FIREBASE DATA ─────────────────────────────────────────────────────────
 async function loadGameData(uid) {
-  const ref = window.fbDoc(window.fbDb, "users", uid, "data", "gamestate");
+  const ref  = window.fbDoc(window.fbDb, "users", uid, "data", "gamestate");
   const snap = await window.fbGetDoc(ref);
   if (snap.exists()) {
     gameData = snap.data();
-    // Ensure all fields exist (backwards-compat)
     gameData.quests   = gameData.quests   || [];
     gameData.history  = gameData.history  || [];
     gameData.loreRead = gameData.loreRead || [];
     gameData.xp       = gameData.xp       || 0;
-    gameData.level    = gameData.level     || 1;
+    gameData.level    = gameData.level    || 1;
     return true;
   }
   return false;
@@ -78,8 +84,8 @@ async function saveGameData() {
 // ── SCREEN ROUTING ────────────────────────────────────────────────────────
 function showScreen(name) {
   document.getElementById("loading-screen").style.display = "none";
-  document.getElementById("auth-screen").style.display    = name === "auth"  ? "flex"  : "none";
-  document.getElementById("char-screen").style.display    = name === "char"  ? "block" : "none";
+  document.getElementById("auth-screen").style.display    = name === "auth" ? "flex"  : "none";
+  document.getElementById("char-screen").style.display    = name === "char" ? "block" : "none";
   const app = document.getElementById("app");
   if (name === "app") app.classList.add("visible");
   else                app.classList.remove("visible");
@@ -131,7 +137,7 @@ function renderCharSelect() {
   grid.innerHTML = "";
   Object.entries(CHARACTERS).forEach(([id, c]) => {
     const div = document.createElement("div");
-    div.className = "char-card";
+    div.className      = "char-card";
     div.dataset.charId = id;
     div.innerHTML = `
       <div class="char-sprite">${c.emoji}</div>
@@ -142,7 +148,7 @@ function renderCharSelect() {
     div.addEventListener("click", () => {
       document.querySelectorAll(".char-card").forEach(c => c.classList.remove("selected"));
       div.classList.add("selected");
-      const btn = document.getElementById("char-confirm-btn");
+      const btn    = document.getElementById("char-confirm-btn");
       btn.disabled = false;
       btn.dataset.charId = id;
     });
@@ -154,14 +160,20 @@ window.confirmCharacter = async function() {
   const btn    = document.getElementById("char-confirm-btn");
   const charId = btn.dataset.charId;
   if (!charId) return;
-  btn.disabled     = true;
-  btn.textContent  = "Beginning your journey...";
+  btn.disabled    = true;
+  btn.textContent = "Beginning your journey...";
+
+  // Pre-load starter quests
+  const starterQuests = DEFAULT_STARTER_IDS
+    .map(id => DEFAULT_QUESTS.find(q => q.id === id))
+    .filter(Boolean)
+    .map(q => ({ ...q, lastCompleted: null }));
 
   gameData = {
     character: charId,
     xp:        0,
     level:     1,
-    quests:    [],
+    quests:    starterQuests,
     history:   [],
     loreRead:  [],
     createdAt: Date.now()
@@ -202,7 +214,6 @@ function updateHeader() {
   document.getElementById("header-xp-next").textContent =
     level < 50 ? toNext.toLocaleString() + " to lv." + (level + 1) : "Max Level!";
 
-  // Quest-tab progress bar
   const progLabel = document.getElementById("prog-label");
   const progFill  = document.getElementById("prog-fill");
   const progCount = document.getElementById("prog-count");
@@ -229,7 +240,7 @@ window.switchTab = function(tab) {
   document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
   const panel = document.getElementById("tab-" + tab);
   if (panel) panel.classList.add("active");
-  const idx = TAB_ORDER.indexOf(tab);
+  const idx  = TAB_ORDER.indexOf(tab);
   const btns = document.querySelectorAll(".nav-btn");
   if (btns[idx]) btns[idx].classList.add("active");
 };
@@ -240,28 +251,33 @@ function renderQuestBoard() {
   if (!board || !gameData) return;
 
   const quests = gameData.quests;
+
+  // Hint bar — always shown
+  const hintBar = `<div class="quest-hint-bar">
+    You can add more quests — and create custom ones — in the
+    <button class="hint-link" onclick="switchTab('add')">Add Quest</button> tab.
+  </div>`;
+
   if (quests.length === 0) {
-    board.innerHTML = `<div class="empty-state">
-      No quests yet.<br>Head to <strong>Add Quest</strong> to begin your journey.
-    </div>`;
+    board.innerHTML = hintBar + `<div class="empty-state">No quests yet. Head to Add Quest to begin.</div>`;
     return;
   }
 
   const overdue  = quests.filter(q => daysOverdue(q) !== null);
   const dueNow   = quests.filter(q => isDue(q) && daysOverdue(q) === null);
-  const upcoming = quests.filter(q => !isDue(q) && daysOverdue(q) === null && q.freq !== "one-off");
   const oneOff   = quests.filter(q => q.freq === "one-off" && !q.lastCompleted);
+  const upcoming = quests.filter(q => !isDue(q) && daysOverdue(q) === null && q.freq !== "one-off");
 
-  let html = "";
+  let html = hintBar;
 
   const card = (q, isOverdue) => {
-    const over     = daysOverdue(q);
-    const until    = daysUntilDue(q);
-    const freqLbl  = FREQ_LABELS[q.freq] || q.freq;
-    const overdueStr = over ? `<span class="overdue-label">⚠ ${over}d overdue</span>` : "";
+    const over       = daysOverdue(q);
+    const until      = daysUntilDue(q);
+    const freqLbl    = FREQ_LABELS[q.freq] || q.freq;
+    const overdueStr = over  ? `<span class="overdue-label">⚠ ${over}d overdue</span>` : "";
     const untilStr   = (!isOverdue && until) ? `<span class="due-soon-label">in ${until}d</span>` : "";
     return `
-      <div class="quest-card${isOverdue ? " overdue" : ""}">
+      <div class="quest-card${isOverdue ? " overdue" : ""}" data-quest-id="${q.id}">
         <div class="quest-emoji">${q.emoji || "⚔️"}</div>
         <div class="quest-info">
           <div class="quest-fantasy-name">${q.fantasy}</div>
@@ -273,20 +289,66 @@ function renderQuestBoard() {
         </div>
         <div class="quest-xp">+${q.xp} XP</div>
         <button class="quest-done-btn" data-quest-id="${q.id}">Done ✓</button>
+        <div class="quest-menu-wrap">
+          <button class="quest-menu-btn" data-quest-id="${q.id}" title="Options">⋯</button>
+          <div class="quest-menu-dropdown" id="menu-${q.id}">
+            <button class="quest-menu-item delete" data-quest-id="${q.id}">🗑 Remove quest</button>
+          </div>
+        </div>
       </div>`;
   };
 
-  if (overdue.length)  html += `<div class="section-heading">⚠ Overdue Quests</div>` + overdue.map(q => card(q, true)).join("");
-  if (dueNow.length)   html += `<div class="section-heading">📋 Due Now</div>`        + dueNow.map(q => card(q, false)).join("");
-  if (oneOff.length)   html += `<div class="section-heading">✨ One-Off Quests</div>` + oneOff.map(q => card(q, false)).join("");
-  if (upcoming.length) html += `<div class="section-heading">🕰 Upcoming</div>`       + upcoming.map(q => card(q, false)).join("");
+  if (overdue.length)  html += `<div class="section-heading">⚠ Overdue Quests</div>`  + overdue.map(q => card(q, true)).join("");
+  if (dueNow.length)   html += `<div class="section-heading">📋 Due Now</div>`         + dueNow.map(q => card(q, false)).join("");
+  if (oneOff.length)   html += `<div class="section-heading">✨ One-Off Quests</div>`  + oneOff.map(q => card(q, false)).join("");
+  if (upcoming.length) html += `<div class="section-heading">🕰 Upcoming</div>`        + upcoming.map(q => card(q, false)).join("");
 
   board.innerHTML = html;
 
-  // Attach click handlers
+  // Done buttons
   board.querySelectorAll(".quest-done-btn").forEach(btn => {
-    btn.addEventListener("click", (e) => completeQuest(btn.dataset.questId, e));
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      completeQuest(btn.dataset.questId, e);
+    });
   });
+
+  // Three-dot menu toggle
+  board.querySelectorAll(".quest-menu-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const id       = btn.dataset.questId;
+      const dropdown = document.getElementById("menu-" + id);
+      // Close all other open menus
+      board.querySelectorAll(".quest-menu-dropdown.open").forEach(d => {
+        if (d !== dropdown) d.classList.remove("open");
+      });
+      dropdown.classList.toggle("open");
+    });
+  });
+
+  // Delete buttons
+  board.querySelectorAll(".quest-menu-item.delete").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      deleteQuest(btn.dataset.questId);
+    });
+  });
+
+  // Close menus when clicking elsewhere
+  document.addEventListener("click", closeAllMenus, { once: true });
+}
+
+function closeAllMenus() {
+  document.querySelectorAll(".quest-menu-dropdown.open").forEach(d => d.classList.remove("open"));
+}
+
+// ── DELETE QUEST ──────────────────────────────────────────────────────────
+async function deleteQuest(questId) {
+  gameData.quests = gameData.quests.filter(q => q.id !== questId);
+  await saveGameData();
+  renderQuestBoard();
+  renderSuggestedQuests();
 }
 
 // ── COMPLETE QUEST ────────────────────────────────────────────────────────
@@ -298,12 +360,11 @@ async function completeQuest(questId, event) {
   btn.disabled    = true;
   btn.textContent = "✓";
 
-  const oldLevel        = gameData.level;
-  quest.lastCompleted   = Date.now();
-  gameData.xp          += quest.xp;
-  gameData.level        = getLevelFromXP(gameData.xp);
+  const oldLevel      = gameData.level;
+  quest.lastCompleted = Date.now();
+  gameData.xp        += quest.xp;
+  gameData.level      = getLevelFromXP(gameData.xp);
 
-  // Add history entry
   gameData.history.unshift({
     questId:     quest.id,
     name:        quest.fantasy,
@@ -314,25 +375,19 @@ async function completeQuest(questId, event) {
   });
   if (gameData.history.length > 200) gameData.history = gameData.history.slice(0, 200);
 
-  // Collect new level-ups
   for (let lv = oldLevel + 1; lv <= gameData.level; lv++) {
     pendingLevelUps.push(lv);
   }
 
   await saveGameData();
-
-  // XP pop
   spawnXPPop(event, quest.xp);
-
   updateHeader();
   renderQuestBoard();
   renderHistory();
   renderKeep();
   checkLoreUnlocks();
 
-  if (pendingLevelUps.length > 0) {
-    showNextLevelUp();
-  }
+  if (pendingLevelUps.length > 0) showNextLevelUp();
 }
 
 function spawnXPPop(event, xp) {
@@ -347,10 +402,7 @@ function spawnXPPop(event, xp) {
 
 // ── LEVEL-UP OVERLAY ──────────────────────────────────────────────────────
 function showNextLevelUp() {
-  if (pendingLevelUps.length === 0) {
-    showNextLore();
-    return;
-  }
+  if (pendingLevelUps.length === 0) { showNextLore(); return; }
   const newLevel = pendingLevelUps.shift();
   const char     = CHARACTERS[gameData.character];
   const title    = getTitleForLevel(gameData.character, newLevel);
@@ -367,11 +419,8 @@ function showNextLevelUp() {
 
 window.closeLevelUp = function() {
   document.getElementById("levelup-overlay").style.display = "none";
-  if (pendingLevelUps.length > 0) {
-    setTimeout(showNextLevelUp, 300);
-  } else {
-    showNextLore();
-  }
+  if (pendingLevelUps.length > 0) setTimeout(showNextLevelUp, 300);
+  else showNextLore();
 };
 
 // ── LORE ──────────────────────────────────────────────────────────────────
@@ -380,9 +429,7 @@ function checkLoreUnlocks() {
   const snippets = LORE[gameData.character] || [];
   snippets.forEach(s => {
     if (gameData.level >= s.level && !gameData.loreRead.includes(s.level)) {
-      if (!pendingLore.find(p => p.level === s.level)) {
-        pendingLore.push(s);
-      }
+      if (!pendingLore.find(p => p.level === s.level)) pendingLore.push(s);
     }
   });
   const bell = document.getElementById("lore-bell");
@@ -413,7 +460,6 @@ window.closeLoreOverlay = async function() {
     }
   }
   document.getElementById("lore-overlay").style.display = "none";
-
   const bell = document.getElementById("lore-bell");
   if (pendingLore.length > 0) {
     bell.classList.add("visible");
@@ -430,8 +476,7 @@ function renderLore() {
   const snippets = LORE[gameData.character] || [];
   let html = "";
   snippets.forEach(s => {
-    const unlocked = gameData.level >= s.level;
-    if (unlocked) {
+    if (gameData.level >= s.level) {
       html += `
         <div class="lore-scroll">
           <h3>${s.title}</h3>
@@ -470,12 +515,10 @@ function renderKeep() {
 function renderHistory() {
   const list = document.getElementById("history-list");
   if (!list || !gameData) return;
-
   if (!gameData.history || gameData.history.length === 0) {
     list.innerHTML = `<div class="empty-state">No quests completed yet.<br>The chronicle awaits your deeds.</div>`;
     return;
   }
-
   let html = "";
   gameData.history.slice(0, 150).forEach(h => {
     const date = new Date(h.completedAt).toLocaleDateString("en-GB", {
@@ -501,14 +544,14 @@ function renderSuggestedQuests() {
   if (!list || !gameData) return;
 
   const groups = {
-    "Daily":           DEFAULT_QUESTS.filter(q => q.freq === "daily"),
-    "Twice a Week":    DEFAULT_QUESTS.filter(q => q.freq === "twice-weekly"),
-    "Weekly":          DEFAULT_QUESTS.filter(q => q.freq === "weekly"),
-    "Every 2 Weeks":   DEFAULT_QUESTS.filter(q => q.freq === "fortnightly"),
-    "Monthly":         DEFAULT_QUESTS.filter(q => q.freq === "monthly"),
-    "Every 3 Months":  DEFAULT_QUESTS.filter(q => q.freq === "quarterly"),
-    "Every 6 Months":  DEFAULT_QUESTS.filter(q => q.freq === "biannual"),
-    "Yearly":          DEFAULT_QUESTS.filter(q => q.freq === "yearly"),
+    "Daily":          DEFAULT_QUESTS.filter(q => q.freq === "daily"),
+    "Twice a Week":   DEFAULT_QUESTS.filter(q => q.freq === "twice-weekly"),
+    "Weekly":         DEFAULT_QUESTS.filter(q => q.freq === "weekly"),
+    "Every 2 Weeks":  DEFAULT_QUESTS.filter(q => q.freq === "fortnightly"),
+    "Monthly":        DEFAULT_QUESTS.filter(q => q.freq === "monthly"),
+    "Every 3 Months": DEFAULT_QUESTS.filter(q => q.freq === "quarterly"),
+    "Every 6 Months": DEFAULT_QUESTS.filter(q => q.freq === "biannual"),
+    "Yearly":         DEFAULT_QUESTS.filter(q => q.freq === "yearly"),
   };
 
   let html = "";
@@ -533,7 +576,6 @@ function renderSuggestedQuests() {
   });
 
   list.innerHTML = html;
-
   list.querySelectorAll(".add-sug-btn:not(:disabled)").forEach(btn => {
     btn.addEventListener("click", () => addSuggestedQuest(btn.dataset.questId));
   });
@@ -541,9 +583,7 @@ function renderSuggestedQuests() {
 
 async function addSuggestedQuest(questId) {
   const template = DEFAULT_QUESTS.find(q => q.id === questId);
-  if (!template) return;
-  if (gameData.quests.some(q => q.id === questId)) return;
-
+  if (!template || gameData.quests.some(q => q.id === questId)) return;
   gameData.quests.push({ ...template, lastCompleted: null });
   await saveGameData();
   renderSuggestedQuests();
@@ -551,103 +591,136 @@ async function addSuggestedQuest(questId) {
 }
 
 // ── CUSTOM QUEST (AI-SCORED) ──────────────────────────────────────────────
-window.submitCustomQuest = async function() {
-  const nameEl = document.getElementById("custom-name");
-  const descEl = document.getElementById("custom-desc");
-  const resEl  = document.getElementById("custom-result");
-  const btn    = document.getElementById("custom-submit-btn");
+// Frequency options for custom quests
+const CUSTOM_FREQ_OPTIONS = [
+  { value: "one-off",      label: "One-off",         days: 0   },
+  { value: "daily",        label: "Daily",            days: 1   },
+  { value: "twice-weekly", label: "Twice a week",     days: 3   },
+  { value: "weekly",       label: "Weekly",           days: 7   },
+  { value: "fortnightly",  label: "Every 2 weeks",    days: 14  },
+  { value: "monthly",      label: "Monthly",          days: 30  },
+  { value: "quarterly",    label: "Every 3 months",   days: 90  },
+  { value: "biannual",     label: "Every 6 months",   days: 180 },
+  { value: "yearly",       label: "Yearly",           days: 365 },
+];
 
-  const name = nameEl.value.trim();
-  const desc = descEl.value.trim();
-
-  if (!desc) {
-    resEl.textContent = "Please describe the task first.";
-    resEl.className   = "custom-result error";
-    return;
-  }
-
-  btn.disabled    = true;
-  btn.textContent = "Consulting the oracle...";
-  resEl.textContent = "";
-  resEl.className   = "custom-result";
-
-  try {
-    const response = await fetch("https://hearthkeeper-ai.tom-offrede.workers.dev/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "grok-4-0709",
-        max_tokens: 200,
-        messages: [{
-          role: "user",
-          content: `You are an XP oracle for a fantasy house-cleaning gamification app. A player has submitted a one-off cleaning task. Based on the effort, time, and difficulty involved, assign an XP value between 50 and 500.
+async function callGrokOracle(questName) {
+  const response = await fetch("https://hearthkeeper-ai.tom-offrede.workers.dev/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "grok-4-0709",
+      max_tokens: 200,
+      messages: [{
+        role: "user",
+        content: `You are an XP oracle for a fantasy house-cleaning gamification app. A player has submitted a cleaning task. Based on the effort, time, and difficulty involved, assign an XP value between 20 and 500.
 
 Rules:
-- Quick tasks under 15 minutes: 50–100 XP
+- Very quick tasks under 5 minutes: 20–50 XP
+- Quick tasks 5–15 minutes: 50–100 XP
 - Medium tasks 15–45 minutes: 100–200 XP
 - Long tasks 45–90 minutes: 200–320 XP
 - Major undertakings over 90 minutes: 320–500 XP
 - Deeply unpleasant tasks get a small bonus
 
-Task description: "${desc}"
+Task: "${questName}"
 
 Respond with ONLY a valid JSON object. No preamble, no markdown, no explanation outside the JSON.
 Format: {"xp": 150, "reason": "one short sentence explaining the award"}`
-        }]
-      })
-    });
+      }]
+    })
+  });
+  const data  = await response.json();
+  const raw   = data.choices?.[0]?.message?.content || "";
+  const clean = raw.replace(/```json|```/g, "").trim();
+  return JSON.parse(clean);
+}
 
-    const data  = await response.json();
-    const raw   = data.choices?.[0]?.message?.content || "";
-    const clean = raw.replace(/```json|```/g, "").trim();
-    const parsed = JSON.parse(clean);
-    const xp = Math.max(50, Math.min(500, Math.round(Number(parsed.xp))));
+function showCustomResult(msg, isError, showRetry) {
+  const resEl = document.getElementById("custom-result");
+  resEl.className = "custom-result" + (isError ? " error" : "");
+  resEl.innerHTML = msg;
+  if (showRetry) {
+    const retryBtn = document.createElement("button");
+    retryBtn.className   = "retry-btn";
+    retryBtn.textContent = "Try again";
+    retryBtn.onclick     = () => submitCustomQuestInner(lastCustomQuest.name, lastCustomQuest.freq, lastCustomQuest.freqDays);
+    resEl.appendChild(retryBtn);
+  }
+}
+
+async function submitCustomQuestInner(name, freq, freqDays) {
+  const btn = document.getElementById("custom-submit-btn");
+  btn.disabled    = true;
+  btn.textContent = "Consulting the oracle...";
+  showCustomResult("", false, false);
+
+  try {
+    const parsed = await callGrokOracle(name);
+    const xp = Math.max(20, Math.min(500, Math.round(Number(parsed.xp))));
 
     const newQuest = {
       id:            "custom_" + Date.now(),
       emoji:         "✨",
-      fantasy:       name || desc.slice(0, 50),
-      real:          desc,
+      fantasy:       name,
+      real:          name,
       xp:            xp,
-      freq:          "one-off",
-      freqDays:      0,
+      freq:          freq,
+      freqDays:      freqDays,
       lastCompleted: null
     };
 
     gameData.quests.push(newQuest);
     await saveGameData();
     renderQuestBoard();
+    renderSuggestedQuests();
 
-    resEl.textContent = `✓ Quest added for ${xp} XP — ${parsed.reason}`;
-    resEl.className   = "custom-result";
-    nameEl.value = "";
-    descEl.value = "";
+    showCustomResult(`✓ Quest added for ${xp} XP — ${parsed.reason}`, false, false);
+    document.getElementById("custom-name").value  = "";
+    document.getElementById("custom-freq").value  = "one-off";
 
   } catch(e) {
-    resEl.textContent = "The oracle is unavailable right now. Please try again.";
-    resEl.className   = "custom-result error";
+    showCustomResult("The oracle couldn't be reached. Please try again.", true, true);
   }
 
   btn.disabled    = false;
-  btn.textContent = "Submit to the Oracle ✨";
+  btn.textContent = "Add Quest ✨";
+}
+
+window.submitCustomQuest = async function() {
+  const nameEl = document.getElementById("custom-name");
+  const freqEl = document.getElementById("custom-freq");
+  const name   = nameEl.value.trim();
+  const freq   = freqEl.value;
+  const option = CUSTOM_FREQ_OPTIONS.find(o => o.value === freq) || CUSTOM_FREQ_OPTIONS[0];
+
+  if (!name) {
+    showCustomResult("Please describe the task first.", true, false);
+    return;
+  }
+
+  // Store for potential retry
+  lastCustomQuest = { name, freq, freqDays: option.days };
+  await submitCustomQuestInner(name, freq, option.days);
 };
 
-// ── BOOTSTRAP: called by index.html after Firebase is ready ───────────────
+// ── XP TOOLTIP ────────────────────────────────────────────────────────────
+window.toggleXPTooltip = function(e) {
+  e.stopPropagation();
+  const tip = document.getElementById("xp-tooltip");
+  tip.classList.toggle("visible");
+  document.addEventListener("click", () => tip.classList.remove("visible"), { once: true });
+};
+
+// ── BOOTSTRAP ─────────────────────────────────────────────────────────────
 window.onAuthReady = function(user) {
   currentUser = user;
-
   if (!user) {
     showScreen("auth");
     return;
   }
-
-  // User is signed in — load their data
   loadGameData(user.uid).then(exists => {
-    if (exists) {
-      initApp();
-    } else {
-      renderCharSelect();
-      showScreen("char");
-    }
+    if (exists) initApp();
+    else { renderCharSelect(); showScreen("char"); }
   });
 };

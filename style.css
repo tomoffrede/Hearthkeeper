@@ -1092,3 +1092,146 @@ a { color: var(--green); }
   .char-grid { grid-template-columns: 1fr; }
   .keep-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 }
+
+/* ── QUEST HINT BAR ─────────────────────────────────────────────────────── */
+.quest-hint-bar {
+  font-size: 13px;
+  color: var(--brown-dark);
+  font-style: italic;
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: var(--amber-light);
+  border: 1px solid var(--amber);
+  border-radius: 10px;
+}
+.hint-link {
+  background: none;
+  border: none;
+  color: var(--green);
+  font-weight: 700;
+  font-size: 13px;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+/* ── THREE-DOT QUEST MENU ───────────────────────────────────────────────── */
+.quest-menu-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+.quest-menu-btn {
+  background: transparent;
+  border: none;
+  color: var(--brown-light);
+  font-size: 20px;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+  cursor: pointer;
+}
+.quest-menu-btn:hover {
+  background: var(--cream-dark);
+  color: var(--brown-dark);
+}
+.quest-menu-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  background: var(--cream);
+  border: 1.5px solid var(--brown-light);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px var(--shadow);
+  min-width: 150px;
+  z-index: 50;
+  overflow: hidden;
+}
+.quest-menu-dropdown.open { display: block; }
+.quest-menu-item {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: 'Nunito', sans-serif;
+}
+.quest-menu-item:hover { background: var(--cream-dark); }
+.quest-menu-item.delete { color: var(--red); }
+
+/* ── XP TOOLTIP ─────────────────────────────────────────────────────────── */
+.xp-tooltip-wrap {
+  position: relative;
+  display: inline-block;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.xp-tooltip-btn {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--brown-light);
+  color: var(--cream);
+  border: none;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 17px;
+  text-align: center;
+  padding: 0;
+  transition: background 0.2s;
+}
+.xp-tooltip-btn:hover { background: var(--brown); }
+.xp-tooltip-box {
+  display: none;
+  position: absolute;
+  left: 24px;
+  top: -6px;
+  width: 220px;
+  background: var(--brown-darker);
+  color: var(--cream);
+  font-size: 12px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.5;
+  padding: 10px 12px;
+  border-radius: 8px;
+  z-index: 100;
+  box-shadow: 0 4px 14px var(--shadow);
+  pointer-events: none;
+}
+.xp-tooltip-box.visible { display: block; }
+
+/* ── RETRY BUTTON ───────────────────────────────────────────────────────── */
+.retry-btn {
+  display: inline-block;
+  margin-left: 10px;
+  background: var(--red-light);
+  border: 1.5px solid var(--red);
+  color: var(--red);
+  border-radius: 7px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Nunito', sans-serif;
+}
+.retry-btn:hover { background: var(--red); color: var(--cream); }
+
+/* ── FORM ROW ───────────────────────────────────────────────────────────── */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 480px) {
+  .form-row { grid-template-columns: 1fr; }
+}
