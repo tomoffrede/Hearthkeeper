@@ -147,46 +147,55 @@ const LORE = {
     {
       level: 5,
       title: "The Threshold",
+      image: "images/lore-wren-1.png",
       text: "The woodland spirits had not, in Wren's experience, been great housekeepers. Their idea of a well-maintained space was a forest: self-regulating, teeming, governed by principles that had no use for mops. The warden's cottage reflected this philosophy completely. Wren stood on the threshold and felt the particular stillness of a place that had been forgotten by everything except the spiders, who had been very busy. The forest had given Wren this task, and Wren approached it the way all forest tasks were approached: with attention, with patience, and with the understanding that the work would take exactly as long as it needed to take."
     },
     {
       level: 9,
       title: "Balance",
+      image: "images/lore-wren-2.png",
       text: "The spirits had asked Wren to explain, once, why the cleaning mattered. Wren had thought about this for a long time before answering: because a home that is not tended falls back into what it was before — and what it was before was wilderness. The spirits had seemed satisfied with this. They were, after all, the wilderness, and they understood returning. Wren swept the floor again, which required doing every morning, and thought about the difference between a place that was alive and a place that was merely occupied."
     },
     {
       level: 16,
       title: "The Visitor",
+      image: "images/lore-wren-3.png",
       text: "A fox had been visiting the cottage garden at dusk for several weeks. It was not the first fox Wren had known — the forest had many — but it was the first that sat and watched with what appeared to be evaluative intent. It assessed the garden, then the cottage, then Wren. It appeared to reach some conclusion. The following morning it was still there, curled on the doorstep in a way that suggested no departure was planned. Wren had known foxes to be decisive. The doorstep was, at this point, extremely clean."
     },
     {
       level: 24,
       title: "The Old Language",
+      image: "images/lore-wren-4.png",
       text: "In the back of the cottage's root cellar, carved into the oldest stone, was a symbol that Wren recognised from the forest's deepest places — a mark the spirits used for what translated, imperfectly, as belonging, or claimed, or perhaps home. It was old. Older than the cottage, almost certainly — the stone had been placed there from somewhere else, brought deliberately. The forest had been here before the cottage. The cottage had been built into the forest's intention. Wren cleaned the cellar very carefully after that, as one does with sacred spaces."
     },
     {
       level: 29,
       title: "What the Forest Knows",
+      image: "images/lore-wren-5.png",
       text: "The woodland spirits paid a formal visit. This was unusual — they communicated normally through less direct means: weather and animal behaviour and the way light moved through trees. A formal visit meant something specific was being said. They walked through every room in silence, and at the end they stood together in the main hall and made a sound that Wren recognised as approval. The cottage, they communicated in their sideways way, was in balance. This was the highest thing the forest could say of any place. Wren swept the front step after they left, which felt appropriate."
     },
     {
       level: 33,
       title: "The Emissary's Work",
+      image: "images/lore-wren-6.png",
       text: "The village had come to understand, gradually, that the warden's cottage was a kind of neutral ground — a place where disputes could be brought, where the line between the forest and the human settlement could be discussed and occasionally renegotiated. This required the cottage to be, at all times, a place of welcome: clean, ordered, warm, prepared. Wren had not anticipated this duty when accepting the posting, but found it suited something deep in the work's nature. A kept space was a trustworthy space. A trustworthy space was one where honest things could be said."
     },
     {
       level: 37,
       title: "The Pattern",
+      image: "images/lore-wren-7.png",
       text: "From the small window above the kitchen sink — visible only while washing up, at a particular angle, in the late afternoon — the whole shape of it could be seen: the cottage garden giving way to the forest edge, the forest edge giving way to the deep trees, the deep trees climbing the hill behind. Everything in its right place, tended or wild or somewhere between. Wren had not understood, arriving here, that the job was not to separate these things but to hold them in relation. The cottage was the hinge. The work was the keeping of the hinge."
     },
     {
       level: 43,
       title: "The Great Storm",
+      image: "images/lore-wren-8.png",
       text: "The storm the spirits sent was, by any measure, a test. Three days of it. The garden wall came down. The path washed out. Two trees fell at the forest edge, one of them across the gate. Wren worked steadily through the aftermath, clearing and repairing and replanting, and the spirits watched — Wren could feel them watching, the way the forest always watches — and on the fourth morning, when the last stone was back in the wall and the path was clear and the gate stood open again, the fox sat on the doorstep and made a sound that Wren understood as: yes. You see. That is the work."
     },
     {
       level: 50,
       title: "Where the Forest Meets the Hearth",
+      image: "images/lore-wren-9.png",
       text: "Wren had lived at the forest's edge long enough now to have become, in some sense, part of it. The villagers consulted Wren about the forest and the forest consulted Wren about the village, and in between was the cottage — clean, warm, tended, the physical argument that the two things could coexist. The fox had grown old and had been joined by its children, who had been joined by their children. The carved stone in the cellar had been joined by other marks, each one a record of belonging. The cottage had been, once, a ruin at the forest edge. It was now the centre of something. Wren could not have said exactly what, but kept it clean anyway, because that was the work."
     }
   ],
@@ -195,6 +204,7 @@ const LORE = {
     {
       level: 5,
       title: "The State of Things",
+      image: "images/lore-thistle-1.png",
       text: "The cottage had not been cleaned in what Thistle estimated to be approximately one era. The dried herbs hanging from the rafters had long since lost their potency and were now merely decorative in the way that cobwebs are decorative — which is to say, not at all. Still, standing in the doorway with a bucket and a sense of grim purpose, Thistle felt something unexpected: the particular satisfaction of a problem that could actually be solved. The village had no shortage of ailments that defied remedy. But a dirty floor? A dirty floor could be dealt with."
     },
     {

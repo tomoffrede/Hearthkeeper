@@ -147,7 +147,6 @@
         <div class="header-xp-next" id="header-xp-next"></div>
       </div>
     </div>
-    <button class="signout-btn" onclick="doSignOut()">Sign out</button>
   </div>
 
   <nav class="app-nav">
@@ -177,36 +176,25 @@
     <div class="tab-panel" id="tab-add">
       <div class="add-quest-form">
         <h2>✨ Custom Quest</h2>
-        <p>Name your quest and choose how often it recurs.</p>
+        <p>Name your quest and choose how often it recurs. The XP rewarded for it will be decided based on how much effort the quest requires.</p>
         <div class="form-field">
           <label>What's the task?</label>
           <input type="text" id="custom-name" placeholder="e.g. Clean out wardrobe"
                  onkeydown="if(event.key==='Enter') submitCustomQuest()">
         </div>
-        <div class="form-row">
-          <div class="form-field">
-            <label>How often?</label>
-            <select id="custom-freq">
-              <option value="one-off">One-off</option>
-              <option value="daily">Daily</option>
-              <option value="twice-weekly">Twice a week</option>
-              <option value="weekly">Weekly</option>
-              <option value="fortnightly">Every 2 weeks</option>
-              <option value="monthly">Monthly</option>
-              <option value="quarterly">Every 3 months</option>
-              <option value="biannual">Every 6 months</option>
-              <option value="yearly">Yearly</option>
-            </select>
-          </div>
-          <div class="form-field">
-            <label>XP reward
-              <span class="xp-tooltip-wrap">
-                <button class="xp-tooltip-btn" onclick="toggleXPTooltip(event)" type="button">?</button>
-                <span class="xp-tooltip-box" id="xp-tooltip">The XP reward is decided by an AI oracle based on how much effort your task requires. You don't need to set it yourself.</span>
-              </span>
-            </label>
-            <input type="text" value="Decided by the oracle" disabled style="color:var(--brown);font-style:italic;">
-          </div>
+        <div class="form-field">
+          <label>How often?</label>
+          <select id="custom-freq">
+            <option value="one-off">One-off</option>
+            <option value="daily">Daily</option>
+            <option value="twice-weekly">Twice a week</option>
+            <option value="weekly">Weekly</option>
+            <option value="fortnightly">Every 2 weeks</option>
+            <option value="monthly">Monthly</option>
+            <option value="quarterly">Every 3 months</option>
+            <option value="biannual">Every 6 months</option>
+            <option value="yearly">Yearly</option>
+          </select>
         </div>
         <button class="submit-btn" id="custom-submit-btn" onclick="submitCustomQuest()">Add Quest ✨</button>
         <div class="custom-result" id="custom-result"></div>
@@ -341,12 +329,12 @@
     <div class="overlay-body modal-text">
       <h3>English</h3>
       <p><strong>Operator:</strong><br>Tom Offrede<br>Berlin, Germany</p>
-      <p><strong>Contact:</strong> Please add a contact email before publishing.</p>
+      <p><strong>Contact:</strong>culturalcalendarberlin@gmail.com</p>
       <p>This is a private, non-commercial hobby project offered free of charge with no advertising and no commercial interest.</p>
       <hr style="border:none;border-top:1px solid var(--brown-light);margin:20px 0">
       <h3>Deutsch</h3>
       <p><strong>Betreiber:</strong><br>Tom Offrede<br>Berlin, Deutschland</p>
-      <p><strong>Kontakt:</strong> Bitte fügen Sie eine Kontakt-E-Mail-Adresse ein, bevor Sie veröffentlichen.</p>
+      <p><strong>Kontakt:</strong> culturalcalendarberlin@gmail.com</p>
       <p>Dies ist ein privates, nicht-kommerzielles Hobbyprojekt, das kostenlos und ohne Werbung oder kommerzielle Absicht angeboten wird.</p>
     </div>
     <button class="overlay-close" onclick="closeModal('modal-impressum')">Close</button>

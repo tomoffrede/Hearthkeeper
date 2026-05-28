@@ -341,7 +341,7 @@ function renderQuestBoard() {
   board.querySelectorAll(".quest-menu-item.delete").forEach(btn=>
     btn.addEventListener("click",e=>{e.stopPropagation();deleteQuest(btn.dataset.id);}));
   document.addEventListener("click",()=>
-    board.querySelectorAll(".quest-menu-dropdown.open").forEach(d=>d.classList.remove("open")),{once:true});
+    document.querySelectorAll(".quest-menu-dropdown.open").forEach(d=>d.classList.remove("open")));
 }
 
 async function deleteQuest(id) {
@@ -433,7 +433,10 @@ function renderLore() {
   let html="";
   (LORE[gameData.character]||[]).forEach(s=>{
     if (gameData.level>=s.level)
-      html+=`<div class="lore-scroll"><h3>${s.title}</h3><div class="lore-unlock-label">Unlocked at Level ${s.level}</div><p>${s.text}</p></div>`;
+      const imgHtml = s.image
+        ? `<img src="${s.image}" alt="" class="lore-img" onerror="this.style.display='none'">`
+        : "";
+      html+=`<div class="lore-scroll">${imgHtml}<h3>${s.title}</h3><div class="lore-unlock-label">Unlocked at Level ${s.level}</div><p>${s.text}</p></div>`;
     else
       html+=`<div class="lore-locked"><p>🔒 Unlocks at <span class="lock-level">Level ${s.level}</span></p></div>`;
   });
