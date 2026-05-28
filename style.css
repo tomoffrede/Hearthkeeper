@@ -1235,3 +1235,298 @@ a { color: var(--green); }
 @media (max-width: 480px) {
   .form-row { grid-template-columns: 1fr; }
 }
+
+/* ── AUTH SPLIT LAYOUT ──────────────────────────────────────────────────── */
+#auth-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.auth-intro {
+  flex: 1;
+  background: var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 36px;
+}
+
+.auth-intro-inner {
+  max-width: 420px;
+  width: 100%;
+}
+
+.auth-intro-logo {
+  font-size: 56px;
+  margin-bottom: 12px;
+}
+
+.auth-intro-title {
+  font-family: 'Lora', serif;
+  font-size: 32px;
+  color: var(--cream);
+  margin-bottom: 6px;
+}
+
+.auth-intro-tagline {
+  font-size: 16px;
+  color: var(--green-pale);
+  font-style: italic;
+  font-family: 'Lora', serif;
+  margin-bottom: 32px;
+}
+
+.auth-intro-features {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 32px;
+}
+
+.auth-intro-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.feature-icon {
+  font-size: 26px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.auth-intro-feature strong {
+  display: block;
+  font-size: 14px;
+  color: var(--cream);
+  margin-bottom: 3px;
+}
+
+.auth-intro-feature p {
+  font-size: 13px;
+  color: var(--green-pale);
+  line-height: 1.5;
+}
+
+.auth-intro-chars {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.auth-intro-chars img {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  border: 2px solid rgba(255,255,255,0.25);
+  object-fit: cover;
+  background: var(--green-light);
+}
+
+.auth-panel {
+  width: 420px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 36px;
+  background: var(--cream-dark);
+}
+
+.auth-box {
+  background: var(--cream);
+  border: 2px solid var(--brown-light);
+  border-radius: 20px;
+  padding: 32px 28px;
+  width: 100%;
+  box-shadow: 0 4px 24px var(--shadow);
+}
+
+.auth-logo { text-align: center; margin-bottom: 24px; }
+.auth-logo .auth-icon { font-size: 40px; display: block; margin-bottom: 8px; }
+.auth-logo h2 { font-size: 22px; color: var(--green); margin-bottom: 4px; }
+.auth-logo p { font-size: 13px; color: var(--brown); font-style: italic; }
+
+.auth-footer {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--brown);
+}
+
+.footer-link {
+  background: none;
+  border: none;
+  color: var(--brown);
+  font-size: 12px;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.footer-link:hover { color: var(--green); }
+.footer-sep { color: var(--brown-light); }
+
+@media (max-width: 760px) {
+  #auth-screen { flex-direction: column; }
+  .auth-intro { padding: 32px 24px; }
+  .auth-intro-title { font-size: 26px; }
+  .auth-panel { width: 100%; padding: 28px 20px; }
+}
+
+/* ── SETTINGS TAB ───────────────────────────────────────────────────────── */
+.settings-section {
+  background: var(--cream);
+  border: 1.5px solid var(--brown-light);
+  border-radius: 14px;
+  padding: 20px 22px;
+  margin-bottom: 16px;
+}
+
+.settings-section h3 {
+  font-size: 16px;
+  color: var(--green);
+  margin-bottom: 6px;
+}
+
+.settings-desc {
+  font-size: 13px;
+  color: var(--brown-dark);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+.settings-btn {
+  background: var(--cream-dark);
+  border: 1.5px solid var(--brown-light);
+  color: var(--brown-darker);
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+.settings-btn:hover { background: var(--cream-darker); }
+
+.settings-btn.danger {
+  background: var(--red-bg);
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.settings-btn.danger:hover { background: var(--red); color: var(--cream); }
+
+.danger-zone { border-color: var(--red-light); }
+.danger-zone h3 { color: var(--red); }
+
+.delete-confirm-box {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--red-light);
+}
+
+.delete-confirm-box p {
+  font-size: 13px;
+  color: var(--brown-dark);
+  margin-bottom: 8px;
+}
+
+.delete-confirm-box input {
+  width: 100%;
+  max-width: 280px;
+  padding: 8px 12px;
+  border: 1.5px solid var(--brown-light);
+  border-radius: 8px;
+  background: var(--cream-dark);
+  font-size: 14px;
+  color: var(--brown-darker);
+  outline: none;
+}
+
+.delete-confirm-box input:focus { border-color: var(--red); }
+
+.footer-link-btn {
+  background: transparent;
+  border: 1.5px solid var(--brown-light);
+  color: var(--brown-dark);
+  border-radius: 7px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.footer-link-btn:hover { border-color: var(--green); color: var(--green); }
+
+/* ── MODAL (wide overlay variant) ──────────────────────────────────────── */
+.modal-wide {
+  max-width: 620px;
+  max-height: 85vh;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.modal-text h3 {
+  font-size: 15px;
+  color: var(--green);
+  margin: 16px 0 8px;
+}
+
+.modal-text h3:first-child { margin-top: 0; }
+
+.modal-text p {
+  font-size: 13px;
+  color: var(--brown-darker);
+  line-height: 1.7;
+  margin-bottom: 10px;
+  font-style: normal;
+  font-family: 'Nunito', sans-serif;
+}
+
+.modal-text strong { color: var(--brown-darker); }
+
+/* ── CHARACTER IMAGES ───────────────────────────────────────────────────── */
+.char-sprite img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 8px;
+  image-rendering: pixelated;
+}
+
+.header-avatar img {
+  width: 38px;
+  height: 38px;
+  object-fit: cover;
+  border-radius: 50%;
+  image-rendering: pixelated;
+}
+
+/* ── KEEP ROOM IMAGES ───────────────────────────────────────────────────── */
+.keep-room-icon img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+/* ── QUEST EMOJI / ICON IMAGES ──────────────────────────────────────────── */
+.quest-emoji img,
+.history-emoji img,
+.s-emoji img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  vertical-align: middle;
+}

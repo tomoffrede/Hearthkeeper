@@ -17,45 +17,100 @@
 
 <!-- ── AUTH ────────────────────────────────────────────────────────────── -->
 <div id="auth-screen" style="display:none">
-  <div class="auth-box">
-    <div class="auth-logo">
-      <span class="auth-icon">🏰</span>
-      <h1>The Hearthkeeper</h1>
-      <p>A quest to keep the home.</p>
-    </div>
 
-    <div class="auth-tabs">
-      <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
-      <button class="auth-tab"        onclick="switchAuthTab('register')">Register</button>
+  <!-- Left: intro panel -->
+  <div class="auth-intro">
+    <div class="auth-intro-inner">
+      <div class="auth-intro-logo">🏰</div>
+      <h1 class="auth-intro-title">The Hearthkeeper</h1>
+      <p class="auth-intro-tagline">Turn your home into an adventure.</p>
+      <div class="auth-intro-features">
+        <div class="auth-intro-feature">
+          <span class="feature-icon"><img src="images/quest-floors.png" alt="" onerror="this.replaceWith(document.createTextNode('⚔️'))"></span>
+          <div>
+            <strong>Quests, not chores</strong>
+            <p>Every cleaning task becomes a quest. Complete them to earn XP and level up your character.</p>
+          </div>
+        </div>
+        <div class="auth-intro-feature">
+          <span class="feature-icon"><img src="images/char-thistle.png" alt="" onerror="this.replaceWith(document.createTextNode('🧙'))"></span>
+          <div>
+            <strong>Choose your hero</strong>
+            <p>Play as Cael, Soren, Pip, Wren, or Thistle — each with their own story and style.</p>
+          </div>
+        </div>
+        <div class="auth-intro-feature">
+          <span class="feature-icon"><img src="images/keep-exterior.png" alt="" onerror="this.replaceWith(document.createTextNode('🏡'))"></span>
+          <div>
+            <strong>Build your keep</strong>
+            <p>As you level up, new rooms unlock — from the kitchen to the tower.</p>
+          </div>
+        </div>
+        <div class="auth-intro-feature">
+          <span class="feature-icon">📜</span>
+          <div>
+            <strong>Uncover your story</strong>
+            <p>Each character has a narrative that unfolds as you progress — nine chapters, earned through honest work.</p>
+          </div>
+        </div>
+      </div>
+      <div class="auth-intro-chars">
+        <img src="images/char-cael.png"    alt="Cael"    onerror="this.style.display='none'">
+        <img src="images/char-soren.png"   alt="Soren"   onerror="this.style.display='none'">
+        <img src="images/char-pip.png"     alt="Pip"     onerror="this.style.display='none'">
+        <img src="images/char-wren.png"    alt="Wren"    onerror="this.style.display='none'">
+        <img src="images/char-thistle.png" alt="Thistle" onerror="this.style.display='none'">
+      </div>
     </div>
+  </div>
 
-    <div id="login-form">
-      <div class="auth-field">
-        <label>Email</label>
-        <input type="email" id="login-email" placeholder="your@email.com">
+  <!-- Right: sign in / register -->
+  <div class="auth-panel">
+    <div class="auth-box">
+      <div class="auth-logo">
+        <span class="auth-icon">🏰</span>
+        <h2>Welcome back</h2>
+        <p>Sign in to your keep, or create a new one.</p>
       </div>
-      <div class="auth-field">
-        <label>Password</label>
-        <input type="password" id="login-password" placeholder="••••••••"
-               onkeydown="if(event.key==='Enter') doLogin()">
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab"        onclick="switchAuthTab('register')">Register</button>
       </div>
-      <button class="auth-submit" onclick="doLogin()">Enter the Keep</button>
+      <div id="login-form">
+        <div class="auth-field">
+          <label>Username</label>
+          <input type="text" id="login-username" placeholder="your username"
+                 onkeydown="if(event.key==='Enter') doLogin()">
+        </div>
+        <div class="auth-field">
+          <label>Password</label>
+          <input type="password" id="login-password" placeholder="••••••••"
+                 onkeydown="if(event.key==='Enter') doLogin()">
+        </div>
+        <button class="auth-submit" onclick="doLogin()">Enter the Keep</button>
+      </div>
+      <div id="register-form" style="display:none">
+        <div class="auth-field">
+          <label>Choose a username</label>
+          <input type="text" id="reg-username" placeholder="letters, numbers, _ and - only"
+                 onkeydown="if(event.key==='Enter') doRegister()">
+        </div>
+        <div class="auth-field">
+          <label>Password</label>
+          <input type="password" id="reg-password" placeholder="At least 6 characters"
+                 onkeydown="if(event.key==='Enter') doRegister()">
+        </div>
+        <button class="auth-submit" onclick="doRegister()">Begin the Journey</button>
+      </div>
+      <div class="auth-error" id="auth-error"></div>
     </div>
-
-    <div id="register-form" style="display:none">
-      <div class="auth-field">
-        <label>Email</label>
-        <input type="email" id="reg-email" placeholder="your@email.com">
-      </div>
-      <div class="auth-field">
-        <label>Password</label>
-        <input type="password" id="reg-password" placeholder="At least 6 characters"
-               onkeydown="if(event.key==='Enter') doRegister()">
-      </div>
-      <button class="auth-submit" onclick="doRegister()">Begin the Journey</button>
+    <div class="auth-footer">
+      <button class="footer-link" onclick="openModal('modal-about')">About</button>
+      <span class="footer-sep">·</span>
+      <button class="footer-link" onclick="openModal('modal-privacy')">Data Privacy</button>
+      <span class="footer-sep">·</span>
+      <button class="footer-link" onclick="openModal('modal-impressum')">Impressum</button>
     </div>
-
-    <div class="auth-error" id="auth-error"></div>
   </div>
 </div>
 
@@ -73,21 +128,15 @@
 
 <!-- ── MAIN APP ─────────────────────────────────────────────────────────── -->
 <div id="app">
-
-  <!-- Header -->
   <div class="app-header">
     <div class="header-char">
-      <div class="header-avatar" id="header-avatar">🌿</div>
+      <div class="header-avatar" id="header-avatar"></div>
       <div>
         <div class="header-name"  id="header-name">Hearthkeeper</div>
         <div class="header-title" id="header-title">Apprentice</div>
       </div>
     </div>
-
-    <button class="lore-bell" id="lore-bell" onclick="openLoreBell()" title="New lore unlocked!">
-      📜
-    </button>
-
+    <button class="lore-bell" id="lore-bell" onclick="openLoreBell()" title="New lore unlocked!">📜</button>
     <div class="header-xp-block">
       <div class="header-xp-label">Level <span id="header-level">1</span></div>
       <div class="header-xp-num" id="header-xp">0 XP</div>
@@ -98,46 +147,42 @@
         <div class="header-xp-next" id="header-xp-next"></div>
       </div>
     </div>
-
     <button class="signout-btn" onclick="doSignOut()">Sign out</button>
   </div>
 
-  <!-- Nav -->
   <nav class="app-nav">
-    <button class="nav-btn active"  onclick="switchTab('quests')">⚔️ Quests</button>
-    <button class="nav-btn"         onclick="switchTab('add')">✨ Add Quest</button>
-    <button class="nav-btn"         onclick="switchTab('keep')">🏰 Keep</button>
-    <button class="nav-btn"         onclick="switchTab('lore')">📜 Lore</button>
-    <button class="nav-btn"         onclick="switchTab('history')">📖 History</button>
+    <button class="nav-btn active" onclick="switchTab('quests')">⚔️ Quests</button>
+    <button class="nav-btn"        onclick="switchTab('add')">✨ Add Quest</button>
+    <button class="nav-btn"        onclick="switchTab('keep')">🏰 Keep</button>
+    <button class="nav-btn"        onclick="switchTab('lore')">📜 Lore</button>
+    <button class="nav-btn"        onclick="switchTab('history')">📖 History</button>
+    <button class="nav-btn"        onclick="switchTab('settings')">⚙️ Settings</button>
   </nav>
 
-  <!-- Content -->
   <div class="app-content">
 
-    <!-- QUESTS TAB -->
+    <!-- QUESTS -->
     <div class="tab-panel active" id="tab-quests">
       <div class="progress-section">
         <div class="prog-row">
-          <span class="prog-label"  id="prog-label">Level 1 → 2</span>
-          <div  class="prog-bg"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
-          <span class="prog-count"  id="prog-count">0 / 200 XP</span>
+          <span class="prog-label" id="prog-label">Level 1 → 2</span>
+          <div class="prog-bg"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+          <span class="prog-count" id="prog-count">0 / 200 XP</span>
         </div>
       </div>
       <div id="quest-board"></div>
     </div>
 
-    <!-- ADD QUEST TAB -->
+    <!-- ADD QUEST -->
     <div class="tab-panel" id="tab-add">
       <div class="add-quest-form">
         <h2>✨ Custom Quest</h2>
         <p>Name your quest and choose how often it recurs.</p>
-
         <div class="form-field">
           <label>What's the task?</label>
           <input type="text" id="custom-name" placeholder="e.g. Clean out wardrobe"
                  onkeydown="if(event.key==='Enter') submitCustomQuest()">
         </div>
-
         <div class="form-row">
           <div class="form-field">
             <label>How often?</label>
@@ -154,25 +199,18 @@
             </select>
           </div>
           <div class="form-field">
-            <label>
-              XP reward
+            <label>XP reward
               <span class="xp-tooltip-wrap">
                 <button class="xp-tooltip-btn" onclick="toggleXPTooltip(event)" type="button">?</button>
-                <span class="xp-tooltip-box" id="xp-tooltip">
-                  The XP reward is decided by an AI oracle based on how much effort your task requires. You don't need to set it yourself.
-                </span>
+                <span class="xp-tooltip-box" id="xp-tooltip">The XP reward is decided by an AI oracle based on how much effort your task requires. You don't need to set it yourself.</span>
               </span>
             </label>
             <input type="text" value="Decided by the oracle" disabled style="color:var(--brown);font-style:italic;">
           </div>
         </div>
-
-        <button class="submit-btn" id="custom-submit-btn" onclick="submitCustomQuest()">
-          Add Quest ✨
-        </button>
+        <button class="submit-btn" id="custom-submit-btn" onclick="submitCustomQuest()">Add Quest ✨</button>
         <div class="custom-result" id="custom-result"></div>
       </div>
-
       <div class="suggested-box">
         <h2>📋 Suggested Quests</h2>
         <p>Common household quests. Add the ones that apply to your keep.</p>
@@ -180,25 +218,58 @@
       </div>
     </div>
 
-    <!-- KEEP TAB -->
+    <!-- KEEP -->
     <div class="tab-panel" id="tab-keep">
       <h2 class="tab-title">Your Keep</h2>
       <p class="tab-subtitle">The state of your home, as seen by those who dwell within it.</p>
       <div class="keep-grid" id="keep-grid"></div>
     </div>
 
-    <!-- LORE TAB -->
+    <!-- LORE -->
     <div class="tab-panel" id="tab-lore">
       <h2 class="tab-title">The Chronicle</h2>
       <p class="tab-subtitle">Your story, as it unfolds.</p>
       <div id="lore-list"></div>
     </div>
 
-    <!-- HISTORY TAB -->
+    <!-- HISTORY -->
     <div class="tab-panel" id="tab-history">
       <h2 class="tab-title">Quest History</h2>
       <p class="tab-subtitle">Every quest completed. Every hearth defended.</p>
       <div id="history-list"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="tab-panel" id="tab-settings">
+      <h2 class="tab-title">Settings</h2>
+      <p class="tab-subtitle">Manage your account and preferences.</p>
+      <div class="settings-section">
+        <h3>Account</h3>
+        <p class="settings-desc">Signed in as <strong id="settings-username"></strong></p>
+        <button class="settings-btn" onclick="doSignOut()">Sign out</button>
+      </div>
+      <div class="settings-section danger-zone">
+        <h3>Danger Zone</h3>
+        <p class="settings-desc">Permanently delete your account and all your data. This cannot be undone.</p>
+        <button class="settings-btn danger" onclick="showDeleteConfirm()">Delete my account</button>
+        <div id="delete-confirm" style="display:none" class="delete-confirm-box">
+          <p>Enter your password to confirm permanent deletion:</p>
+          <input type="password" id="delete-password" placeholder="Your password">
+          <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+            <button class="settings-btn danger" onclick="doDeleteAccount()">Yes, delete everything</button>
+            <button class="settings-btn" onclick="hideDeleteConfirm()">Cancel</button>
+          </div>
+          <div class="auth-error" id="delete-error"></div>
+        </div>
+      </div>
+      <div class="settings-section">
+        <h3>Legal</h3>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button class="footer-link-btn" onclick="openModal('modal-about')">About this project</button>
+          <button class="footer-link-btn" onclick="openModal('modal-privacy')">Data Privacy</button>
+          <button class="footer-link-btn" onclick="openModal('modal-impressum')">Impressum</button>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -226,16 +297,74 @@
   </div>
 </div>
 
+<!-- ── ABOUT MODAL ──────────────────────────────────────────────────────── -->
+<div class="overlay" id="modal-about" style="display:none">
+  <div class="overlay-box modal-wide">
+    <h2>About The Hearthkeeper</h2>
+    <div class="overlay-body modal-text">
+      <p>The Hearthkeeper is a personal project by <strong>Tom Offrede</strong> — a free, open web app that turns the never-ending work of keeping a home into a light RPG adventure.</p>
+      <p>The idea is simple: house cleaning is repetitive, unglamorous, and easy to put off. Gamification doesn't make it glamorous, but it can make it feel a little more purposeful — and a little more rewarding. Complete a quest, earn XP, level up your character, unlock your keep, read a story that unfolds only because you did the work.</p>
+      <p>The app is entirely free, has no ads, and collects no data beyond what is needed to save your progress. It is built with Firebase for authentication and data storage, and uses the Grok AI API to score custom quests.</p>
+      <p>This is a hobby project, offered freely to anyone who wants it. No commercial interest. No tracking. Just a clean house and a good story.</p>
+    </div>
+    <button class="overlay-close" onclick="closeModal('modal-about')">Close</button>
+  </div>
+</div>
+
+<!-- ── DATA PRIVACY MODAL ───────────────────────────────────────────────── -->
+<div class="overlay" id="modal-privacy" style="display:none">
+  <div class="overlay-box modal-wide">
+    <h2>Data Privacy · Datenschutzerklärung</h2>
+    <div class="overlay-body modal-text">
+      <h3>English</h3>
+      <p><strong>What data is collected:</strong> When you register, your chosen username (stored internally as a pseudo-email) and a hashed password are stored by Firebase Authentication (Google). Your game progress — character, XP, quest history — is stored in Firebase Firestore. No real name, email address, or personal information is required or stored.</p>
+      <p><strong>Why:</strong> Solely to save your game progress and allow sign-in from any device.</p>
+      <p><strong>Who has access:</strong> Only you. Data is protected by Firebase security rules that prevent any other user from reading or writing your data.</p>
+      <p><strong>Third-party services:</strong> Firebase (Google LLC, USA) is used for authentication and storage. When you submit a custom quest, its name is sent to the Grok API (xAI) to determine an XP value. No personal data is included in these requests.</p>
+      <p><strong>Deletion:</strong> You can delete your account at any time from the Settings tab, permanently removing all your data.</p>
+      <hr style="border:none;border-top:1px solid var(--brown-light);margin:20px 0">
+      <h3>Deutsch</h3>
+      <p><strong>Welche Daten werden erhoben:</strong> Bei der Registrierung werden Ihr Benutzername (intern als Pseudo-E-Mail gespeichert) und ein verschlüsseltes Passwort durch Firebase Authentication (Google) gespeichert. Ihr Spielfortschritt wird in Firebase Firestore gespeichert. Es werden keine echten Namen oder E-Mail-Adressen gespeichert.</p>
+      <p><strong>Zweck:</strong> Ausschließlich zur Speicherung Ihres Spielfortschritts und zur geräteübergreifenden Anmeldung.</p>
+      <p><strong>Zugriff:</strong> Nur Sie haben Zugriff. Die Daten sind durch Firebase-Sicherheitsregeln geschützt.</p>
+      <p><strong>Drittanbieter:</strong> Firebase (Google LLC, USA) für Authentifizierung und Speicherung. Beim Einreichen einer eigenen Aufgabe wird deren Name an die Grok API (xAI) gesendet. Keine personenbezogenen Daten werden dabei übermittelt.</p>
+      <p><strong>Löschung:</strong> Sie können Ihr Konto jederzeit im Einstellungen-Tab löschen.</p>
+    </div>
+    <button class="overlay-close" onclick="closeModal('modal-privacy')">Close</button>
+  </div>
+</div>
+
+<!-- ── IMPRESSUM MODAL ───────────────────────────────────────────────────── -->
+<div class="overlay" id="modal-impressum" style="display:none">
+  <div class="overlay-box modal-wide">
+    <h2>Impressum</h2>
+    <div class="overlay-body modal-text">
+      <h3>English</h3>
+      <p><strong>Operator:</strong><br>Tom Offrede<br>Berlin, Germany</p>
+      <p><strong>Contact:</strong> Please add a contact email before publishing.</p>
+      <p>This is a private, non-commercial hobby project offered free of charge with no advertising and no commercial interest.</p>
+      <hr style="border:none;border-top:1px solid var(--brown-light);margin:20px 0">
+      <h3>Deutsch</h3>
+      <p><strong>Betreiber:</strong><br>Tom Offrede<br>Berlin, Deutschland</p>
+      <p><strong>Kontakt:</strong> Bitte fügen Sie eine Kontakt-E-Mail-Adresse ein, bevor Sie veröffentlichen.</p>
+      <p>Dies ist ein privates, nicht-kommerzielles Hobbyprojekt, das kostenlos und ohne Werbung oder kommerzielle Absicht angeboten wird.</p>
+    </div>
+    <button class="overlay-close" onclick="closeModal('modal-impressum')">Close</button>
+  </div>
+</div>
+
 <!-- ── SCRIPTS ──────────────────────────────────────────────────────────── -->
 <script src="lore.js"></script>
 <script src="data.js"></script>
 
 <script type="module">
-  import { initializeApp }                            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { initializeApp }                                      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword,
            signInWithEmailAndPassword, signOut,
-           onAuthStateChanged }                       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc, setDoc }        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+           onAuthStateChanged, deleteUser,
+           EmailAuthProvider,
+           reauthenticateWithCredential }                       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, deleteDoc }       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey:            "AIzaSyAC7U9OwcmX8-U8p5Xt8dNOg0G58ivq3F8",
@@ -250,14 +379,18 @@
   const fbAuth = getAuth(fbApp);
   const fbDb   = getFirestore(fbApp);
 
-  window.fbAuth       = fbAuth;
-  window.fbDb         = fbDb;
-  window.fbDoc        = doc;
-  window.fbGetDoc     = getDoc;
-  window.fbSetDoc     = setDoc;
-  window.fbSignIn     = signInWithEmailAndPassword;
-  window.fbCreateUser = createUserWithEmailAndPassword;
-  window.fbSignOut    = () => signOut(fbAuth);
+  window.fbAuth          = fbAuth;
+  window.fbDb            = fbDb;
+  window.fbDoc           = doc;
+  window.fbGetDoc        = getDoc;
+  window.fbSetDoc        = setDoc;
+  window.fbDeleteDoc     = deleteDoc;
+  window.fbSignIn        = signInWithEmailAndPassword;
+  window.fbCreateUser    = createUserWithEmailAndPassword;
+  window.fbSignOut       = () => signOut(fbAuth);
+  window.fbDeleteUser    = deleteUser;
+  window.fbReauth        = reauthenticateWithCredential;
+  window.fbEmailProvider = EmailAuthProvider;
 
   onAuthStateChanged(fbAuth, (user) => {
     if (window.onAuthReady) window.onAuthReady(user);
@@ -265,6 +398,5 @@
 </script>
 
 <script src="app.js"></script>
-
 </body>
 </html>
