@@ -297,7 +297,8 @@ window.switchTab = function(tab) {
 function renderQuestBoard() {
   const board = document.getElementById("quest-board");
   if (!board||!gameData) return;
-  const hint = `<div class="quest-hint-bar">You can add and manage quests in the <button class="hint-link" onclick="switchTab('add')">Manage Quests</button> tab.</div>`;
+  const hintDismissed = localStorage.getItem("hintDismissed");
+  const hint = hintDismissed ? "" : `<div class="quest-hint-bar">You can add and manage quests in the <button class="hint-link" onclick="switchTab('add')">Manage Quests</button> tab.<button class="hint-close" onclick="dismissHint()" title="Close">✕</button></div>`;
   if (!gameData.quests.length) { board.innerHTML = hint+`<div class="empty-state">No quests yet.</div>`; return; }
 
   const overdue  = gameData.quests.filter(q=>daysOverdue(q)!==null);
@@ -582,6 +583,11 @@ window.submitCustomQuest = async function() {
   if (!name) { showResult("Please describe the task first.",true,false); return; }
   lastCustomQuest={name,freq};
   await submitInner(name,freq);
+};
+
+window.dismissHint = function() {
+  localStorage.setItem("hintDismissed", "1");
+  renderQuestBoard();
 };
 
 window.toggleXPTooltip = function(e) {
