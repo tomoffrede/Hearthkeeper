@@ -194,7 +194,18 @@ window.doDeleteAccount = async function() {
 };
 
 // ── MODALS ────────────────────────────────────────────────────────────────
-window.openModal  = id => { document.getElementById(id).style.display = "flex"; };
+window.openModal = function(id) {
+  const overlay = document.getElementById(id);
+  overlay.style.display = "flex";
+  setTimeout(() => {
+    overlay.addEventListener("click", function handler(e) {
+      if (e.target === overlay) {
+        overlay.style.display = "none";
+        overlay.removeEventListener("click", handler);
+      }
+    });
+  }, 0);
+};
 window.closeModal = id => { document.getElementById(id).style.display = "none"; };
 
 // ── CHARACTER SELECT ──────────────────────────────────────────────────────
