@@ -207,7 +207,7 @@
         </div>
         <div class="form-field">
           <label>How often?</label>
-          <select id="custom-freq">
+          <select id="custom-freq" onchange="updateCustomXP()">
             <option value="one-off">One-off</option>
             <option value="daily">Daily</option>
             <option value="twice-weekly">Twice a week</option>
@@ -219,6 +219,16 @@
             <option value="yearly">Yearly</option>
           </select>
         </div>
+        <div class="form-field">
+          <label>How much effort?</label>
+          <div class="effort-btns" id="effort-btns">
+            <button type="button" class="effort-btn active" data-effort="quick" onclick="selectEffort(this)">⚡ Quick<span>under 15 min</span></button>
+            <button type="button" class="effort-btn" data-effort="medium" onclick="selectEffort(this)">🔨 Medium<span>15–45 min</span></button>
+            <button type="button" class="effort-btn" data-effort="long" onclick="selectEffort(this)">💪 Long<span>45–90 min</span></button>
+            <button type="button" class="effort-btn" data-effort="big" onclick="selectEffort(this)">🏋️ Big job<span>90+ min</span></button>
+          </div>
+        </div>
+        <div class="custom-xp-preview" id="custom-xp-preview"></div>
         <button class="submit-btn" id="custom-submit-btn" onclick="submitCustomQuest()">Add Quest ✨</button>
         <div class="custom-result" id="custom-result"></div>
       </div>

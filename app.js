@@ -54,7 +54,6 @@ let currentUser     = null;
 let gameData        = null;
 let pendingLevelUps = [];
 let pendingLore     = [];
-let lastCustomQuest = { name: "", freq: "one-off", freqDays: 0 };
 
 const DEFAULT_STARTER_IDS = ["q1","q4","q7","q9","q12","q3"];
 
@@ -559,41 +558,67 @@ Respond ONLY with valid JSON: {"xp":150,"reason":"one sentence"}`}]})
   return JSON.parse(d.choices?.[0]?.message?.content.replace(/```json|```/g,"").trim()||"{}");
 }
 
-function showResult(msg,isErr,retry) {
-  const el=document.getElementById("custom-result");
-  el.className="custom-result"+(isErr?" error":"");
-  el.textContent=msg;
-  if (retry) {
-    const btn=document.createElement("button");
-    btn.className="retry-btn"; btn.textContent="Try again";
-    btn.onclick=()=>submitInner(lastCustomQuest.name,lastCustomQuest.freq);
-    el.appendChild(btn);
-  }
+// ── CUSTOM QUEST XP ───────────────────────────────────────────────────────
+const BASE_XP = {
+  "one-off":      80,
+  "daily":        25,
+  "twice-weekly": 38,
+  "weekly":       68,
+  "fortnightly":  85,
+  "monthly":      130,
+  "quarterly":    185,
+  "biannual":     245,
+  "yearly":       360,
+};
+
+const EFFORT_MULT = { quick: 0.75, medium: 1.0, long: 1.3, big: 1.6 };
+
+function calcCustomXP(freq, effort) {
+  const base = BASE_XP[freq] || 80;
+  const mult = EFFORT_MULT[effort] || 1.0;
+  return Math.round(base * mult);
 }
 
-async function submitInner(name,freq) {
-  const btn=document.getElementById("custom-submit-btn");
-  btn.disabled=true; btn.textContent="Consulting the oracle...";
-  showResult("",false,false);
-  try {
-    const parsed=await callOracle(name);
-    const xp=Math.max(20,Math.min(500,Math.round(Number(parsed.xp))));
-    gameData.quests.push({id:"custom_"+Date.now(),emoji:"✨",fantasy:name,real:name,
-      xp,freq,freqDays:FREQ_DAYS[freq]||0,lastCompleted:null});
-    await saveGameData(); renderQuestBoard(); renderSuggestedQuests();
-    showResult(`✓ Quest added for ${xp} XP — ${parsed.reason}`,false,false);
-    document.getElementById("custom-name").value="";
-    document.getElementById("custom-freq").value="one-off";
-  } catch(_) { showResult("The oracle couldn't be reached. Please try again.",true,true); }
-  btn.disabled=false; btn.textContent="Add Quest ✨";
+window.selectEffort = function(btn) {
+  document.querySelectorAll(".effort-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  updateCustomXP();
+};
+
+window.updateCustomXP = function() {
+  const freq   = document.getElementById("custom-freq")?.value;
+  const effort = document.querySelector(".effort-btn.active")?.dataset.effort || "medium";
+  const xp     = calcCustomXP(freq, effort);
+  const el     = document.getElementById("custom-xp-preview");
+  if (el) el.textContent = `This quest will award ${xp} XP`;
+};
+
+function showResult(msg, isErr) {
+  const el = document.getElementById("custom-result");
+  el.className = "custom-result" + (isErr ? " error" : "");
+  el.textContent = msg;
 }
 
-window.submitCustomQuest = async function() {
-  const name=document.getElementById("custom-name").value.trim();
-  const freq=document.getElementById("custom-freq").value;
-  if (!name) { showResult("Please describe the task first.",true,false); return; }
-  lastCustomQuest={name,freq};
-  await submitInner(name,freq);
+window.submitCustomQuest = function() {
+  const name   = document.getElementById("custom-name").value.trim();
+  const freq   = document.getElementById("custom-freq").value;
+  const effort = document.querySelector(".effort-btn.active")?.dataset.effort || "medium";
+  const xp     = calcCustomXP(freq, effort);
+  if (!name) { showResult("Please describe the task first.", true); return; }
+  gameData.quests.push({
+    id: "custom_" + Date.now(), emoji: "✨",
+    fantasy: name, real: name,
+    xp, freq, freqDays: FREQ_DAYS[freq] || 0, lastCompleted: null
+  });
+  saveGameData();
+  renderQuestBoard();
+  renderSuggestedQuests();
+  showResult(`✓ Quest added for ${xp} XP.`, false);
+  document.getElementById("custom-name").value = "";
+  document.getElementById("custom-freq").value = "one-off";
+  document.querySelectorAll(".effort-btn").forEach(b => b.classList.remove("active"));
+  document.querySelector(".effort-btn[data-effort='medium']").classList.add("active");
+  updateCustomXP();
 };
 
 window.dismissHint = function() {
@@ -601,12 +626,6 @@ window.dismissHint = function() {
   renderQuestBoard();
 };
 
-window.toggleXPTooltip = function(e) {
-  e.stopPropagation();
-  const t=document.getElementById("xp-tooltip");
-  t.classList.toggle("visible");
-  document.addEventListener("click",()=>t.classList.remove("visible"),{once:true});
-};
 
 // ── FREQUENCY EDITOR ──────────────────────────────────────────────────────
 window.openFreqEditor = function(questId) {
@@ -707,7 +726,12 @@ window.updateRegNote = function() {
   }
 };
 
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("custom-freq")) updateCustomXP();
+});
+
 // ── BOOTSTRAP ─────────────────────────────────────────────────────────────
+
 window.onAuthReady = function(user) {
   currentUser=user;
   if (!user) { showScreen("auth"); return; }

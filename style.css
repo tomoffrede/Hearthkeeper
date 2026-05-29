@@ -208,11 +208,11 @@ a { color: var(--green); }
 }
 
 .char-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 260px));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 16px;
   margin-bottom: 28px;
-  justify-content: center;
 }
 
 .char-card {
@@ -223,6 +223,8 @@ a { color: var(--green); }
   cursor: pointer;
   transition: all 0.2s;
   text-align: center;
+  width: 260px;
+  flex-shrink: 0;
 }
 
 .char-card:hover {
@@ -1174,7 +1176,8 @@ a { color: var(--green); }
   .keep-room-icon { font-size: 30px; }
 
   /* ── Character select ── */
-  .char-grid { grid-template-columns: 1fr; }
+  .char-grid { gap: 12px; }
+  .char-card { width: 100%; }
   #char-screen { padding: 24px 16px 40px; }
   .char-screen-inner > h1 { font-size: 22px; }
 
@@ -1689,4 +1692,55 @@ a { color: var(--green); }
   object-fit: contain;
   image-rendering: pixelated;
   vertical-align: middle;
+}
+
+/* ── EFFORT BUTTONS ─────────────────────────────────────────────────────── */
+.effort-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.effort-btn {
+  background: var(--cream-dark);
+  border: 1.5px solid var(--brown-light);
+  border-radius: 10px;
+  padding: 10px 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brown-darker);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  transition: all 0.2s;
+  font-family: 'Nunito', sans-serif;
+}
+
+.effort-btn span {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--brown);
+}
+
+.effort-btn:hover {
+  border-color: var(--green);
+  background: var(--green-bg);
+}
+
+.effort-btn.active {
+  border-color: var(--green);
+  background: var(--green-bg);
+  color: var(--green);
+}
+
+.effort-btn.active span { color: var(--green); }
+
+.custom-xp-preview {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 14px;
+  min-height: 20px;
 }
