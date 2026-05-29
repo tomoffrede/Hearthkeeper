@@ -1247,6 +1247,28 @@ a { color: var(--green); }
   .form-row { grid-template-columns: 1fr; }
 }
 
+.auth-field-note {
+  font-size: 12px;
+  margin-top: 5px;
+  line-height: 1.4;
+  min-height: 16px;
+}
+
+.forgot-link {
+  display: block;
+  background: none;
+  border: none;
+  color: var(--brown);
+  font-size: 12px;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  padding: 6px 0 0;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.forgot-link:hover { color: var(--green); }
+
 /* ── AUTH SPLIT LAYOUT ──────────────────────────────────────────────────── */
 #auth-screen {
   min-height: 100vh;

@@ -88,12 +88,27 @@
                  onkeydown="if(event.key==='Enter') doLogin()">
         </div>
         <button class="auth-submit" onclick="doLogin()">Enter the Keep</button>
+        <button class="forgot-link" onclick="showForgotPassword()" type="button">Forgot your password?</button>
+        <div id="forgot-form" style="display:none">
+          <div class="auth-field" style="margin-top:14px">
+            <label>Enter your email to reset your password</label>
+            <input type="email" id="forgot-email" placeholder="your@email.com"
+                   onkeydown="if(event.key==='Enter') doForgotPassword()">
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="auth-submit" onclick="doForgotPassword()" style="flex:1">Send reset link</button>
+            <button class="auth-submit" onclick="hideForgotPassword()" style="flex:0;background:var(--brown-light)">Cancel</button>
+          </div>
+          <div class="auth-error" id="forgot-msg" style="color:var(--green)"></div>
+        </div>
       </div>
       <div id="register-form" style="display:none">
         <div class="auth-field">
-          <label>Choose a username</label>
-          <input type="text" id="reg-username" placeholder="letters, numbers, _ and - only"
-                 onkeydown="if(event.key==='Enter') doRegister()">
+          <label>Username or email</label>
+          <input type="text" id="reg-username" placeholder="username or your@email.com"
+                 onkeydown="if(event.key==='Enter') doRegister()"
+                 oninput="updateRegNote()">
+          <div id="reg-note" class="auth-field-note"></div>
         </div>
         <div class="auth-field">
           <label>Password</label>
@@ -350,7 +365,7 @@
   import { getAuth, createUserWithEmailAndPassword,
            signInWithEmailAndPassword, signOut,
            onAuthStateChanged, deleteUser,
-           EmailAuthProvider,
+           EmailAuthProvider, sendPasswordResetEmail,
            reauthenticateWithCredential }                       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFirestore, doc, getDoc, setDoc, deleteDoc }       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -379,6 +394,7 @@
   window.fbDeleteUser    = deleteUser;
   window.fbReauth        = reauthenticateWithCredential;
   window.fbEmailProvider = EmailAuthProvider;
+  window.fbResetPassword = sendPasswordResetEmail;
 
   onAuthStateChanged(fbAuth, (user) => {
     if (window.onAuthReady) window.onAuthReady(user);

@@ -1,6 +1,9 @@
 // ── USERNAME HELPERS ──────────────────────────────────────────────────────
 const EMAIL_DOMAIN = "@hearthkeeper.app";
-function toEmail(u)    { return u.trim().toLowerCase() + EMAIL_DOMAIN; }
+function toEmail(u) {
+  const trimmed = u.trim();
+  return trimmed.includes("@") ? trimmed.toLowerCase() : trimmed.toLowerCase() + EMAIL_DOMAIN;
+}
 function fromEmail(e)  { return e ? e.replace(EMAIL_DOMAIN, "") : ""; }
 
 // ── IMAGE HELPERS ─────────────────────────────────────────────────────────
@@ -148,13 +151,17 @@ window.doRegister = async function() {
   const p = document.getElementById("reg-password").value;
   const e = document.getElementById("auth-error");
   e.textContent = "";
-  if (!u) { e.textContent = "Please choose a username."; return; }
-  if (u.length < 3) { e.textContent = "Username must be at least 3 characters."; return; }
-  if (!/^[a-zA-Z0-9_-]+$/.test(u)) { e.textContent = "Letters, numbers, _ and - only."; return; }
+  if (!u) { e.textContent = "Please enter a username or email."; return; }
+  const isEmail = u.includes("@");
+  if (!isEmail) {
+    if (u.length < 3) { e.textContent = "Username must be at least 3 characters."; return; }
+    if (!/^[a-zA-Z0-9_-]+$/.test(u)) { e.textContent = "Username: letters, numbers, _ and - only."; return; }
+  }
   try { await window.fbCreateUser(window.fbAuth, toEmail(u), p); }
   catch(err) {
-    if (err.code==="auth/email-already-in-use") e.textContent = "Username already taken.";
+    if (err.code==="auth/email-already-in-use") e.textContent = "Username or email already registered.";
     else if (err.code==="auth/weak-password")   e.textContent = "Password must be at least 6 characters.";
+    else if (err.code==="auth/invalid-email")   e.textContent = "That doesn't look like a valid email address.";
     else                                         e.textContent = "Registration failed. Please try again.";
   }
 };
@@ -642,6 +649,45 @@ window.saveFreq = async function(questId) {
   document.getElementById("freq-editor-overlay").remove();
   await saveGameData();
   renderQuestBoard();
+};
+
+// ── FORGOT PASSWORD ───────────────────────────────────────────────────────
+window.showForgotPassword = function() {
+  document.getElementById("forgot-form").style.display = "block";
+  document.getElementById("forgot-msg").textContent = "";
+  document.getElementById("forgot-email").value = "";
+};
+
+window.hideForgotPassword = function() {
+  document.getElementById("forgot-form").style.display = "none";
+};
+
+window.doForgotPassword = async function() {
+  const email = document.getElementById("forgot-email").value.trim();
+  const msg   = document.getElementById("forgot-msg");
+  msg.style.color = "var(--green)";
+  msg.textContent = "";
+  if (!email) { msg.style.color="var(--red)"; msg.textContent = "Please enter your email."; return; }
+  try {
+    await window.fbResetPassword(window.fbAuth, email);
+    msg.textContent = "Reset link sent — check your inbox.";
+  } catch(e) {
+    msg.style.color = "var(--red)";
+    msg.textContent = "No account found with that email, or an error occurred.";
+  }
+};
+
+window.updateRegNote = function() {
+  const u    = document.getElementById("reg-username").value.trim();
+  const note = document.getElementById("reg-note");
+  if (!u) { note.textContent = ""; return; }
+  if (u.includes("@")) {
+    note.style.color = "var(--green)";
+    note.textContent = "✓ Registering with email — password recovery will be available.";
+  } else {
+    note.style.color = "var(--red)";
+    note.textContent = "⚠ Registering with username only — if you forget your password, it cannot be recovered.";
+  }
 };
 
 // ── BOOTSTRAP ─────────────────────────────────────────────────────────────
