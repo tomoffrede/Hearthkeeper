@@ -329,11 +329,12 @@ a { color: var(--green); }
   background: var(--green-light);
   border-radius: 50%;
   border: 2px solid var(--green-pale);
+  flex-shrink: 0;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 24px;
-  flex-shrink: 0;
 }
 
 .header-name {
@@ -1090,18 +1091,120 @@ a { color: var(--green); }
 }
 
 /* ── RESPONSIVE ─────────────────────────────────────────────────────────── */
+
+/* Tablet (≤760px) — already handled by auth split layout rule above */
+
+/* Mobile (≤540px) */
 @media (max-width: 540px) {
-  .app-header { padding: 10px 14px; gap: 8px; }
-  .header-xp-bar-wrap { width: 80px; }
-  .header-xp-num { font-size: 15px; }
-  .app-content { padding: 14px; }
-  .auth-box { padding: 28px 20px; }
-  .overlay-box { padding: 28px 20px; }
-  .lore-scroll { padding: 20px 18px; }
-  .add-quest-form { padding: 18px; }
-  .suggested-box { padding: 16px; }
+
+  /* ── Header ── */
+  .app-header {
+    padding: 8px 12px;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+  .header-avatar { width: 36px; height: 36px; font-size: 18px; }
+  .header-name { font-size: 14px; }
+  .header-title { font-size: 10px; }
+  .header-xp-num { font-size: 13px; }
+  .header-xp-bar-wrap { width: 70px; }
+  .header-xp-next { display: none; }
+
+  /* ── Nav ── */
+  .nav-btn { padding: 10px 12px; font-size: 12px; }
+
+  /* ── Content ── */
+  .app-content { padding: 12px; }
+
+  /* ── Quest cards: stack done button below info on small screens ── */
+  .quest-card {
+    flex-wrap: wrap;
+    padding: 12px;
+    gap: 8px;
+  }
+  .quest-info { width: calc(100% - 44px); } /* full width minus emoji */
+  .quest-xp {
+    margin-left: 44px; /* align under info, past emoji */
+    font-size: 13px;
+  }
+  .quest-done-btn {
+    margin-left: auto;
+    padding: 6px 14px;
+    font-size: 12px;
+  }
+  .quest-menu-wrap { margin-left: 4px; }
+
+  /* ── Progress bar ── */
+  .prog-label { font-size: 11px; }
+  .prog-count { font-size: 11px; }
+
+  /* ── Auth ── */
+  .auth-box { padding: 24px 18px; }
+  .auth-intro { padding: 24px 18px; }
+  .auth-intro-logo { font-size: 40px; }
+  .auth-intro-title { font-size: 22px; }
+  .auth-intro-tagline { font-size: 14px; margin-bottom: 20px; }
+  .auth-intro-features { gap: 14px; margin-bottom: 20px; }
+  .auth-intro-feature strong { font-size: 13px; }
+  .auth-intro-feature p { font-size: 12px; }
+  .auth-intro-chars img { width: 42px; height: 42px; }
+
+  /* ── Overlays ── */
+  .overlay { padding: 12px; }
+  .overlay-box {
+    padding: 24px 18px;
+    border-radius: 16px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .overlay-box h2 { font-size: 20px; }
+  .overlay-icon { font-size: 38px; }
+  .overlay-body { font-size: 14px; }
+  .modal-wide { max-height: 88vh; }
+
+  /* ── Lore ── */
+  .lore-scroll { padding: 18px 16px; }
+  .lore-scroll p { font-size: 14px; line-height: 1.8; }
+  .lore-img { max-height: 130px; }
+
+  /* ── Keep grid ── */
+  .keep-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .keep-room { padding: 14px 10px; }
+  .keep-room-icon { font-size: 30px; }
+
+  /* ── Character select ── */
   .char-grid { grid-template-columns: 1fr; }
-  .keep-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  #char-screen { padding: 24px 16px 40px; }
+  .char-screen-inner > h1 { font-size: 22px; }
+
+  /* ── Add quest / suggested ── */
+  .add-quest-form { padding: 16px; }
+  .suggested-box { padding: 14px; }
+  .form-row { grid-template-columns: 1fr; }
+
+  /* ── Suggested items: hide fantasy name on very small screens ── */
+  .s-real { display: none; }
+
+  /* ── Settings ── */
+  .settings-section { padding: 16px; }
+  .delete-confirm-box input { max-width: 100%; }
+
+  /* ── History ── */
+  .history-item { padding: 10px 12px; gap: 10px; }
+  .history-name { font-size: 13px; }
+
+  /* ── Hint bar ── */
+  .quest-hint-bar { font-size: 12px; padding: 8px 12px; }
+}
+
+/* Very small screens (≤380px) */
+@media (max-width: 380px) {
+  .nav-btn { padding: 10px 8px; font-size: 11px; }
+  .quest-card { padding: 10px; }
+  .header-name { display: none; } /* just show avatar + XP on tiny screens */
+  .keep-grid { grid-template-columns: 1fr 1fr; }
+  .auth-intro-chars { gap: 8px; }
+  .auth-intro-chars img { width: 34px; height: 34px; }
 }
 
 /* ── QUEST HINT BAR ─────────────────────────────────────────────────────── */
@@ -1546,11 +1649,12 @@ a { color: var(--green); }
 }
 
 .header-avatar img {
-  width: 38px;
-  height: 38px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   border-radius: 50%;
   image-rendering: pixelated;
+  display: block;
 }
 
 /* ── KEEP ROOM IMAGES ───────────────────────────────────────────────────── */

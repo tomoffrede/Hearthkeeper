@@ -2,15 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#4A7C59">
   <title>The Hearthkeeper</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="images/app-icon.png">
+  <link rel="apple-touch-icon" href="images/app-icon.png">
+  <style>
+    @media (max-width: 540px) { input, select, textarea { font-size: 16px !important; } }
+    * { -webkit-tap-highlight-color: transparent; }
+  </style>
 </head>
 <body>
 
 <!-- ── LOADING ─────────────────────────────────────────────────────────── -->
 <div id="loading-screen">
-  <span style="font-size:48px">🏰</span>
+  <img src="images/app-icon.png" alt="" style="width:80px;height:80px;border-radius:16px;image-rendering:pixelated;margin-bottom:4px;" onerror="this.outerHTML='<span style=font-size:48px>🏰</span>'">
   <div class="loading-title">The Hearthkeeper</div>
   <div class="spinner"></div>
 </div>
@@ -21,7 +29,7 @@
   <!-- Left: intro panel -->
   <div class="auth-intro">
     <div class="auth-intro-inner">
-      <div class="auth-intro-logo">🏰</div>
+      <div class="auth-intro-logo"><img src="images/app-icon.png" alt="" style="width:64px;height:64px;border-radius:12px;image-rendering:pixelated;" onerror="this.outerHTML='🏰'"></div>
       <h1 class="auth-intro-title">The Hearthkeeper</h1>
       <p class="auth-intro-tagline">Turn your home into an adventure.</p>
       <div class="auth-intro-features">
@@ -68,7 +76,7 @@
   <div class="auth-panel">
     <div class="auth-box">
       <div class="auth-logo">
-        <span class="auth-icon">🏰</span>
+        <span class="auth-icon"><img src="images/app-icon.png" alt="" style="width:44px;height:44px;border-radius:10px;image-rendering:pixelated;" onerror="this.outerHTML='🏰'"></span>
         <h2>Welcome back</h2>
         <p>Sign in to your keep, or create a new one.</p>
       </div>
