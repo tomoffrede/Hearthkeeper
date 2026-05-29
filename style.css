@@ -1308,6 +1308,14 @@ a { color: var(--green); }
   margin-top: 2px;
 }
 
+.feature-icon img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  border-radius: 6px;
+}
+
 .auth-intro-feature strong {
   display: block;
   font-size: 14px;
