@@ -433,12 +433,12 @@ function renderLore() {
   if (!list||!gameData) return;
   let html="";
   (LORE[gameData.character]||[]).forEach(s=>{
-    if (gameData.level>=s.level)
+    if (gameData.level>=s.level) {
       const imgHtml = s.image
         ? `<img src="${s.image}" alt="" class="lore-img" onerror="this.style.display='none'">`
         : "";
       html+=`<div class="lore-scroll">${imgHtml}<h3>${s.title}</h3><div class="lore-unlock-label">Unlocked at Level ${s.level}</div><p>${s.text}</p></div>`;
-    else
+    } else
       html+=`<div class="lore-locked"><p>🔒 Unlocks at <span class="lock-level">Level ${s.level}</span></p></div>`;
   });
   list.innerHTML = html||`<div class="empty-state">Your story awaits.</div>`;
