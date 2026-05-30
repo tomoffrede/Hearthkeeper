@@ -1124,7 +1124,7 @@ a { color: var(--green); }
   .nav-btn { padding: 10px 12px; font-size: 12px; }
 
   /* ── Content ── */
-  .app-content { padding: 12px; padding-top: 200px; }
+  .app-content { padding: 12px; padding-top: 200px !important; }
 
   /* ── Quest cards: stack done button below info on small screens ── */
   .quest-card {
