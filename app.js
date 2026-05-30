@@ -205,6 +205,32 @@ window.openModal = function(id) {
     });
   }, 0);
 };
+
+window.openPortrait = function() {
+  if (!gameData) return;
+  const char  = CHARACTERS[gameData.character];
+  const title = getTitleForLevel(gameData.character, gameData.level);
+  const existing = document.getElementById("portrait-overlay");
+  if (existing) existing.remove();
+  const overlay = document.createElement("div");
+  overlay.id = "portrait-overlay";
+  overlay.innerHTML = `
+    <div class="portrait-frame" onclick="event.stopPropagation()">
+      <img class="portrait-img" src="images/char-${gameData.character}.png"
+        alt="${char.name}"
+        onerror="this.outerHTML='<div style=width:280px;height:280px;display:flex;align-items:center;justify-content:center;font-size:80px>${char.emoji}</div>'">
+      <span class="portrait-corner tl">✦</span>
+      <span class="portrait-corner tr">✦</span>
+      <span class="portrait-corner bl">✦</span>
+      <span class="portrait-corner br">✦</span>
+    </div>
+    <div>
+      <div class="portrait-name">${char.name}</div>
+      <div class="portrait-title">${title}</div>
+    </div>`;
+  overlay.addEventListener("click", () => overlay.remove());
+  document.body.appendChild(overlay);
+};
 window.closeModal = id => { document.getElementById(id).style.display = "none"; };
 
 // ── CHARACTER SELECT ──────────────────────────────────────────────────────
