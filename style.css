@@ -458,7 +458,7 @@ a { color: var(--green); }
   max-width: 860px;
   width: 100%;
   margin: 0 auto;
-  padding-top: 110px;
+  padding-top: 140px;
 }
 
 .tab-panel { display: none; }
@@ -1112,6 +1112,7 @@ a { color: var(--green); }
     gap: 8px;
     flex-wrap: nowrap;
   }
+  .app-content { padding-top: 160px; }
   .header-avatar { width: 36px; height: 36px; font-size: 18px; }
   .header-name { font-size: 14px; }
   .header-title { font-size: 10px; }
