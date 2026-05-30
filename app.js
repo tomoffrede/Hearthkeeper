@@ -274,6 +274,10 @@ window.confirmCharacter = async function() {
 // ── APP INIT ──────────────────────────────────────────────────────────────
 function initApp() {
   showScreen("app");
+  // Set content spacer height to match fixed header+nav wrapper (next 3 lines)
+  const wrapper = document.querySelector(".app-header-wrap");
+  const spacer  = document.getElementById("app-content-spacer");
+  if (wrapper && spacer) spacer.style.height = wrapper.offsetHeight + "px";
   updateHeader();
   renderQuestBoard();
   renderSuggestedQuests();
