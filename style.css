@@ -1840,3 +1840,59 @@ a { color: var(--green); }
   font-style: italic;
   letter-spacing: 1px;
 }
+
+/* ── LEVEL UP IMAGE ─────────────────────────────────────────────────────── */
+.levelup-box {
+  padding-top: 0;
+  overflow: hidden;
+}
+
+.levelup-img {
+  width: calc(100% + 64px);
+  margin: 0 -32px 20px -32px;
+  height: 200px;
+  object-fit: cover;
+  object-position: center top;
+  image-rendering: pixelated;
+  display: block;
+  border-radius: 16px 16px 0 0;
+}
+
+@media (max-width: 540px) {
+  .levelup-img {
+    width: calc(100% + 36px);
+    margin: 0 -18px 16px -18px;
+    height: 160px;
+  }
+}
+
+/* ── KEEP ROOM IMAGES ───────────────────────────────────────────────────── */
+.keep-room.unlocked {
+  cursor: pointer;
+  padding: 14px;
+}
+.keep-room.unlocked:hover {
+  box-shadow: 0 4px 16px var(--shadow);
+  transform: translateY(-2px);
+  transition: all 0.2s;
+}
+.keep-room-img-wrap { margin-bottom: 10px; }
+
+.keep-condition-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--brown);
+  margin-top: 6px;
+}
+
+.keep-stage-label {
+  font-size: 11px;
+  color: var(--brown-light);
+  margin-top: 2px;
+  font-style: italic;
+}
+
+.keep-room-overlay-box {
+  max-width: 480px;
+  text-align: left;
+}

@@ -424,12 +424,13 @@ function spawnXPPop(event,xp) {
 // ── LEVEL UP ──────────────────────────────────────────────────────────────
 function showNextLevelUp() {
   if (!pendingLevelUps.length) { showNextLore(); return; }
-  const lv=pendingLevelUps.shift();
-  const char=CHARACTERS[gameData.character];
-  document.getElementById("levelup-icon").textContent    = "🎉";
+  const lv   = pendingLevelUps.shift();
+  const char = CHARACTERS[gameData.character];
+  document.getElementById("levelup-img").src = `images/levelup-${gameData.character}.png`;
+  document.getElementById("levelup-img").alt = char.name;
   document.getElementById("levelup-heading").textContent = "Level Up!";
-  document.getElementById("levelup-title").textContent   = `${char.name} · ${getTitleForLevel(gameData.character,lv)}`;
-  document.getElementById("levelup-body").textContent    = LEVEL_UNLOCKS[lv]||`You have reached Level ${lv}. The keep grows stronger.`;
+  document.getElementById("levelup-title").textContent   = `${char.name} · ${getTitleForLevel(gameData.character, lv)}`;
+  document.getElementById("levelup-body").textContent    = LEVEL_UNLOCKS[lv] || `You have reached Level ${lv}. The keep grows stronger.`;
   document.getElementById("levelup-overlay").style.display = "flex";
 }
 
@@ -490,17 +491,64 @@ function renderLore() {
 
 // ── KEEP ──────────────────────────────────────────────────────────────────
 function renderKeep() {
-  const grid=document.getElementById("keep-grid");
-  if (!grid||!gameData) return;
-  grid.innerHTML = KEEP_ROOMS.map(room=>{
-    const locked=gameData.level<room.unlockLevel;
-    const icon=`<div class="keep-room-icon">${keepImg(room.id,room.emoji)}</div>`;
-    return `<div class="keep-room${locked?" locked":""}">
-      ${icon}<h3>${room.name}</h3><p>${room.desc}</p>
-      ${locked?`<div class="keep-lock-label">🔒 Unlocks at Level ${room.unlockLevel}</div>`:""}
+  const grid = document.getElementById("keep-grid");
+  if (!grid || !gameData) return;
+
+  const overdueCount = gameData.quests.filter(q => daysOverdue(q) !== null).length;
+  const condition    = getRoomCondition(overdueCount);
+
+  grid.innerHTML = KEEP_ROOMS.map(room => {
+    const locked = gameData.level < room.unlockLevel;
+    if (locked) {
+      return `<div class="keep-room locked">
+        <div class="keep-room-icon">${keepImg(room.id, room.emoji)}</div>
+        <h3>${room.name}</h3>
+        <p>${room.desc}</p>
+        <div class="keep-lock-label">🔒 Unlocks at Level ${room.unlockLevel}</div>
+      </div>`;
+    }
+    const stage   = getRoomStage(room, gameData.level);
+    const imgId   = room.id.replace("_", "-");
+    const imgSrc  = `images/keep-${imgId}-${stage}-${condition}.png`;
+    const conditionLabel = condition === "clean" ? "✨ Well kept" : condition === "dusty" ? "🌫 Could use attention" : "⚠ Neglected";
+    return `<div class="keep-room unlocked" onclick="openKeepRoom('${room.id}','${imgSrc}','${room.name}','${stage}','${condition}')">
+      <div class="keep-room-img-wrap">
+        <img src="${imgSrc}" alt="${room.name}"
+          style="width:100%;height:120px;object-fit:cover;border-radius:10px;image-rendering:pixelated;display:block;"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div style="display:none;width:100%;height:120px;align-items:center;justify-content:center;font-size:36px;background:var(--cream-dark);border-radius:10px;">${room.emoji}</div>
+      </div>
+      <h3>${room.name}</h3>
+      <p>${room.desc}</p>
+      <div class="keep-condition-label">${conditionLabel}</div>
+      <div class="keep-stage-label">${stage.replace("stage","Stage ")}</div>
     </div>`;
   }).join("");
 }
+
+window.openKeepRoom = function(roomId, imgSrc, roomName, stage, condition) {
+  const existing = document.getElementById("keep-room-overlay");
+  if (existing) existing.remove();
+  const stageLabel     = stage.replace("stage", "Stage ");
+  const conditionLabel = condition === "clean" ? "✨ Well kept" : condition === "dusty" ? "🌫 Could use attention" : "⚠ Neglected";
+  const overlay = document.createElement("div");
+  overlay.id = "keep-room-overlay";
+  overlay.className = "overlay";
+  overlay.innerHTML = `
+    <div class="overlay-box keep-room-overlay-box" onclick="event.stopPropagation()">
+      <img src="${imgSrc}" alt="${roomName}"
+        style="width:100%;border-radius:10px;image-rendering:pixelated;display:block;margin-bottom:14px;"
+        onerror="this.style.display='none'">
+      <h2 style="font-size:18px;margin-bottom:4px">${roomName}</h2>
+      <div style="display:flex;gap:10px;margin-bottom:16px">
+        <span class="keep-condition-label">${conditionLabel}</span>
+        <span class="keep-stage-label">${stageLabel}</span>
+      </div>
+      <button class="overlay-close" onclick="document.getElementById('keep-room-overlay').remove()">Close</button>
+    </div>`;
+  overlay.addEventListener("click", () => overlay.remove());
+  document.body.appendChild(overlay);
+};
 
 // ── HISTORY ───────────────────────────────────────────────────────────────
 function renderHistory() {
