@@ -301,10 +301,8 @@ a { color: var(--green); }
 #app {
   display: none;
   flex-direction: column;
-  min-height: 100vh;
 }
-
-#app.visible { display: flex; }
+#app.visible { display: block; }
 
 /* ── APP HEADER ─────────────────────────────────────────────────────────── */
 .app-header {
