@@ -30,7 +30,8 @@ function questImg(imgKey, fallback) {
 // Map quest ids to image keys
 const QUEST_IMG_MAP = {
   q1:"dishes",  q2:"sink",    q3:"trash",   q4:"floors",
-  q5:"floors",  q6:"oven",    q7:"floors",  q8:"floors",
+  q5:"floors",  q6:"oven",    q7:"floors",  q7b:"floors",
+  q8:"floors",  q43:"floors", q44:"sink",
   q9:"toilet",  q10:"sink",   q11:"oven",   q12:"laundry",
   q13:"oven",   q14:"trash",  q15:"shower", q16:"dusting",
   q17:"shower", q18:"fridge", q19:"sink",   q20:"shower",
@@ -501,10 +502,10 @@ function renderKeep() {
     const locked = gameData.level < room.unlockLevel;
     if (locked) {
       return `<div class="keep-room locked">
-        <div class="keep-room-icon">${keepImg(room.id, room.emoji)}</div>
+        <div style="width:100%;height:120px;display:flex;align-items:center;justify-content:center;font-size:48px;background:var(--cream-dark);border-radius:10px;margin-bottom:10px;">🔒</div>
         <h3>${room.name}</h3>
         <p>${room.desc}</p>
-        <div class="keep-lock-label">🔒 Unlocks at Level ${room.unlockLevel}</div>
+        <div class="keep-lock-label">Unlocks at Level ${room.unlockLevel}</div>
       </div>`;
     }
     const stage   = getRoomStage(room, gameData.level);
@@ -521,7 +522,7 @@ function renderKeep() {
       <h3>${room.name}</h3>
       <p>${room.desc}</p>
       <div class="keep-condition-label">${conditionLabel}</div>
-      <div class="keep-stage-label">${stage.replace("stage","Stage ")}</div>
+      <div class="keep-stage-label">${stage === "stage3" ? "✦ Fully upgraded" : "More upgrades available"}</div>
     </div>`;
   }).join("");
 }
@@ -529,7 +530,9 @@ function renderKeep() {
 window.openKeepRoom = function(roomId, imgSrc, roomName, stage, condition) {
   const existing = document.getElementById("keep-room-overlay");
   if (existing) existing.remove();
-  const stageLabel     = stage.replace("stage", "Stage ");
+  const stageLabel = stage === "stage3"
+    ? `${roomName} is at its finest.`
+    : `Level up more to upgrade your ${roomName.toLowerCase()}.`;
   const conditionLabel = condition === "clean" ? "✨ Well kept" : condition === "dusty" ? "🌫 Could use attention" : "⚠ Neglected";
   const overlay = document.createElement("div");
   overlay.id = "keep-room-overlay";

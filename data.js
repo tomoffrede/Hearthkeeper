@@ -278,11 +278,13 @@ const DEFAULT_QUESTS = [
   { id:"q2",  emoji:"🧹", fantasy:"Wipe the Hearth Stones",       real:"Wipe kitchen counters",                  xp:20,  freq:"daily",        freqDays:1   },
   { id:"q3",  emoji:"🗑️", fantasy:"Haul the Refuse",              real:"Take out trash (when full)",             xp:20,  freq:"daily",        freqDays:1   },
   { id:"q4",  emoji:"🛋️", fantasy:"Tidy the Halls",               real:"General tidy-up / put things away",     xp:20,  freq:"daily",        freqDays:1   },
+  { id:"q43", emoji:"🧹", fantasy:"Clear the Passage",             real:"Sweep / vacuum hallway",                 xp:30,  freq:"weekly",       freqDays:7   },
   // ── TWICE A WEEK ─────────────────────────────────────────────────────────
   { id:"q5",  emoji:"🧺", fantasy:"Sweep the Kitchen Flags",       real:"Sweep / vacuum kitchen floor",           xp:40,  freq:"twice-weekly", freqDays:3   },
   { id:"q6",  emoji:"🍳", fantasy:"Scour the Cooking Stone",       real:"Wipe stovetop",                          xp:35,  freq:"twice-weekly", freqDays:3   },
   // ── WEEKLY ───────────────────────────────────────────────────────────────
-  { id:"q7",  emoji:"🌀", fantasy:"Banish the Dust Sprites",       real:"Vacuum living room & bedroom",           xp:70,  freq:"weekly",       freqDays:7   },
+  { id:"q7",  emoji:"🌀", fantasy:"Banish the Dust Sprites",       real:"Vacuum living room",                     xp:55,  freq:"weekly",       freqDays:7   },
+  { id:"q7b", emoji:"🌀", fantasy:"Sweep the Sleeping Chamber",    real:"Vacuum / sweep bedroom",                 xp:40,  freq:"weekly",       freqDays:7   },
   { id:"q8",  emoji:"🪣", fantasy:"Mop the Stone Floors",          real:"Mop hard floors",                        xp:75,  freq:"weekly",       freqDays:7   },
   { id:"q9",  emoji:"🚽", fantasy:"Purge the Privy",               real:"Clean toilet bowl & seat",               xp:80,  freq:"weekly",       freqDays:7   },
   { id:"q10", emoji:"🪥", fantasy:"Polish the Wash Basin",         real:"Wipe bathroom sink & mirror",            xp:60,  freq:"weekly",       freqDays:7   },
@@ -297,6 +299,7 @@ const DEFAULT_QUESTS = [
   // ── MONTHLY ──────────────────────────────────────────────────────────────
   { id:"q18", emoji:"❄️", fantasy:"Purge the Cold Vault",          real:"Clean inside fridge",                    xp:130, freq:"monthly",      freqDays:30  },
   { id:"q19", emoji:"🌊", fantasy:"Unclog the Scullery Drain",     real:"Clean kitchen sink drain",               xp:120, freq:"monthly",      freqDays:30  },
+  { id:"q44", emoji:"🪣", fantasy:"Scour the Scullery Basin",      real:"Clean kitchen sink",                     xp:45,  freq:"weekly",       freqDays:7   },
   { id:"q20", emoji:"🪞", fantasy:"Launder the Shower Veil",       real:"Wash shower curtain / liner",            xp:110, freq:"monthly",      freqDays:30  },
   { id:"q21", emoji:"🧽", fantasy:"Restore the Grout Lines",       real:"Clean bathroom grout",                   xp:140, freq:"monthly",      freqDays:30  },
   { id:"q22", emoji:"🌀", fantasy:"Purify the Wash Engine",        real:"Clean washing machine",                  xp:125, freq:"monthly",      freqDays:30  },
