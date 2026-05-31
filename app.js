@@ -103,11 +103,13 @@ async function loadGameData(uid) {
   const snap = await window.fbGetDoc(ref);
   if (snap.exists()) {
     gameData = snap.data();
-    gameData.quests   = gameData.quests   || [];
-    gameData.history  = gameData.history  || [];
-    gameData.loreRead = gameData.loreRead || [];
-    gameData.xp       = gameData.xp       || 0;
-    gameData.level    = gameData.level    || 1;
+    gameData.quests      = gameData.quests      || [];
+    gameData.history     = gameData.history     || [];
+    gameData.loreRead    = gameData.loreRead    || [];
+    gameData.xp          = gameData.xp          || 0;
+    gameData.level       = gameData.level       || 1;
+    gameData.keepTokens  = gameData.keepTokens  || 0;
+    gameData.roomStages  = gameData.roomStages  || {};
     return true;
   }
   return false;
@@ -266,7 +268,7 @@ window.confirmCharacter = async function() {
   const starterQuests = DEFAULT_STARTER_IDS
     .map(id => DEFAULT_QUESTS.find(q=>q.id===id)).filter(Boolean)
     .map(q => ({...q, lastCompleted:null}));
-  gameData = { character:charId, xp:0, level:1, quests:starterQuests, history:[], loreRead:[], createdAt:Date.now() };
+  gameData = { character:charId, xp:0, level:1, quests:starterQuests, history:[], loreRead:[], keepTokens:0, roomStages:{}, createdAt:Date.now() };
   await saveGameData();
   initApp();
 };
@@ -412,7 +414,10 @@ async function completeQuest(questId, event) {
   gameData.level      = getLevelFromXP(gameData.xp);
   gameData.history.unshift({questId:quest.id,name:quest.fantasy,real:quest.real,emoji:quest.emoji||"⚔️",xp:quest.xp,completedAt:Date.now()});
   if (gameData.history.length>200) gameData.history=gameData.history.slice(0,200);
-  for (let lv=oldLv+1;lv<=gameData.level;lv++) pendingLevelUps.push(lv);
+  for (let lv=oldLv+1;lv<=gameData.level;lv++) {
+    pendingLevelUps.push(lv);
+    if (TOKEN_LEVELS.has(lv)) gameData.keepTokens++;
+  }
   await saveGameData();
   spawnXPPop(event,quest.xp);
   updateHeader(); renderQuestBoard(); renderHistory(); renderKeep(); checkLoreUnlocks();
@@ -428,7 +433,7 @@ function spawnXPPop(event,xp) {
 
 // ── LEVEL UP ──────────────────────────────────────────────────────────────
 function showNextLevelUp() {
-  if (!pendingLevelUps.length) { showNextLore(); return; }
+  if (!pendingLevelUps.length) { checkAndShowTokenNotice(); return; }
   const lv   = pendingLevelUps.shift();
   const char = CHARACTERS[gameData.character];
   document.getElementById("levelup-img").src = `images/levelup-${gameData.character}.png`;
@@ -440,8 +445,33 @@ function showNextLevelUp() {
 }
 
 window.closeLevelUp = function() {
-  document.getElementById("levelup-overlay").style.display="none";
-  if (pendingLevelUps.length) setTimeout(showNextLevelUp,300); else showNextLore();
+  document.getElementById("levelup-overlay").style.display = "none";
+  if (pendingLevelUps.length) setTimeout(showNextLevelUp, 300);
+  else checkAndShowTokenNotice();
+};
+
+function checkAndShowTokenNotice() {
+  // Show token notice if tokens available
+  if (gameData.keepTokens > 0) {
+    showTokenNotice();
+  } else {
+    checkLoreUnlocks();
+    showNextLore();
+  }
+}
+
+function showTokenNotice() {
+  const count = gameData.keepTokens;
+  document.getElementById("token-notice-img").src = "images/app-icon.png";
+  document.getElementById("token-notice-count").textContent =
+    count === 1 ? "You have 1 Keep Token." : `You have ${count} Keep Tokens.`;
+  document.getElementById("token-notice-overlay").style.display = "flex";
+}
+
+window.closeTokenNotice = function() {
+  document.getElementById("token-notice-overlay").style.display = "none";
+  checkLoreUnlocks();
+  showNextLore();
 };
 
 // ── LORE ──────────────────────────────────────────────────────────────────
@@ -481,7 +511,19 @@ window.closeLoreOverlay = async function() {
 function renderLore() {
   const list=document.getElementById("lore-list");
   if (!list||!gameData) return;
-  let html="";
+  const char = CHARACTERS[gameData.character];
+  const charCard = `<div class="lore-char-card">
+    <img src="images/char-${gameData.character}.png" alt="${char.name}"
+      class="lore-char-portrait"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+    <div class="lore-char-portrait-fallback" style="display:none">${char.emoji}</div>
+    <div class="lore-char-info">
+      <h3>${char.name}</h3>
+      <div class="lore-char-epithet">${char.epithet}</div>
+      <p class="lore-char-bio">${char.bio}</p>
+    </div>
+  </div>`;
+  let html = charCard;
   (LORE[gameData.character]||[]).forEach(s=>{
     if (gameData.level>=s.level) {
       const imgHtml = s.image
@@ -501,22 +543,36 @@ function renderKeep() {
 
   const overdueCount = gameData.quests.filter(q => daysOverdue(q) !== null).length;
   const condition    = getRoomCondition(overdueCount);
+  const tokens       = gameData.keepTokens || 0;
 
-  grid.innerHTML = KEEP_ROOMS.map(room => {
-    const locked = gameData.level < room.unlockLevel;
+  // Token banner
+  const tokenBanner = tokens > 0
+    ? `<div class="token-banner">🪙 You have <strong>${tokens}</strong> Keep Token${tokens !== 1 ? "s" : ""} to spend. Click a room to unlock or upgrade it.</div>`
+    : "";
+
+  grid.innerHTML = tokenBanner + KEEP_ROOMS.map(room => {
+    const locked      = gameData.level < room.unlockLevel;
+    const stageNum    = (gameData.roomStages || {})[room.id] || 0;
+    const stage       = stageNum >= 2 ? "stage3" : stageNum >= 1 ? "stage2" : "stage1";
+    const fullyUpgraded = stageNum >= 2;
+    const canSpend    = tokens > 0 && (locked || !fullyUpgraded);
+
     if (locked) {
-      return `<div class="keep-room locked">
-        <div style="width:100%;height:120px;display:flex;align-items:center;justify-content:center;font-size:48px;background:var(--cream-dark);border-radius:10px;margin-bottom:10px;">🔒</div>
+      return `<div class="keep-room locked${canSpend ? " spendable" : ""}" ${canSpend ? `onclick="spendToken('${room.id}')"` : ""}>
+        <div style="width:100%;height:120px;display:flex;align-items:center;justify-content:center;font-size:48px;background:var(--cream-dark);border-radius:10px;margin-bottom:10px;">${canSpend ? "🔓" : "🔒"}</div>
         <h3>${room.name}</h3>
         <p>${room.desc}</p>
-        <div class="keep-lock-label">Unlocks at Level ${room.unlockLevel}</div>
+        <div class="keep-lock-label">${canSpend ? "🪙 Tap to unlock" : `Requires Level ${room.unlockLevel}`}</div>
       </div>`;
     }
-    const stage   = getRoomStage(room, gameData.level);
-    const imgId   = room.id.replace("_", "-");
-    const imgSrc  = `images/keep-${imgId}-${stage}-${condition}.png`;
+
+    const imgId  = room.id.replace("_", "-");
+    const imgSrc = `images/keep-${imgId}-${stage}-${condition}.png`;
     const conditionLabel = condition === "clean" ? "✨ Well kept" : condition === "dusty" ? "🌫 Could use attention" : "⚠ Neglected";
-    return `<div class="keep-room unlocked" onclick="openKeepRoom('${room.id}','${imgSrc}','${room.name}','${stage}','${condition}')">
+    const stageLabel = fullyUpgraded ? "✦ Fully upgraded" : canSpend ? "🪙 Tap to upgrade" : "More upgrades available";
+
+    return `<div class="keep-room unlocked${canSpend && !fullyUpgraded ? " spendable" : ""}"
+      onclick="${canSpend && !fullyUpgraded ? `spendToken('${room.id}')` : `openKeepRoom('${room.id}','${imgSrc}','${room.name}','${stage}','${condition}')`}">
       <div class="keep-room-img-wrap">
         <img src="${imgSrc}" alt="${room.name}"
           style="width:100%;height:120px;object-fit:cover;border-radius:10px;image-rendering:pixelated;display:block;"
@@ -526,17 +582,37 @@ function renderKeep() {
       <h3>${room.name}</h3>
       <p>${room.desc}</p>
       <div class="keep-condition-label">${conditionLabel}</div>
-      <div class="keep-stage-label">${stage === "stage3" ? "✦ Fully upgraded" : "More upgrades available"}</div>
+      <div class="keep-stage-label">${stageLabel}</div>
     </div>`;
   }).join("");
 }
+
+window.spendToken = async function(roomId) {
+  if (!gameData.keepTokens || gameData.keepTokens < 1) return;
+  const room     = KEEP_ROOMS.find(r => r.id === roomId);
+  if (!room) return;
+  const locked   = gameData.level < room.unlockLevel;
+  const stageNum = (gameData.roomStages || {})[roomId] || 0;
+  if (!locked && stageNum >= 2) return; // already fully upgraded
+
+  gameData.keepTokens--;
+  if (!gameData.roomStages) gameData.roomStages = {};
+  if (locked) {
+    // Unlocking: level requirement waived by token, set stage to 0 (unlocked, stage1)
+    gameData.roomStages[roomId] = 0;
+  } else {
+    gameData.roomStages[roomId] = stageNum + 1;
+  }
+  await saveGameData();
+  renderKeep();
+};
 
 window.openKeepRoom = function(roomId, imgSrc, roomName, stage, condition) {
   const existing = document.getElementById("keep-room-overlay");
   if (existing) existing.remove();
   const stageLabel = stage === "stage3"
     ? `${roomName} is at its finest.`
-    : `Level up more to upgrade your ${roomName.toLowerCase()}.`;
+    : `Spend a Keep Token to upgrade your ${roomName.toLowerCase()}.`;
   const conditionLabel = condition === "clean" ? "✨ Well kept" : condition === "dusty" ? "🌫 Could use attention" : "⚠ Neglected";
   const overlay = document.createElement("div");
   overlay.id = "keep-room-overlay";

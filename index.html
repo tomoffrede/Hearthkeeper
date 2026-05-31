@@ -298,6 +298,19 @@
   </div>
 </div>
 
+<!-- ── TOKEN NOTICE OVERLAY ────────────────────────────────────────────── -->
+<div class="overlay" id="token-notice-overlay" style="display:none">
+  <div class="overlay-box" style="text-align:center">
+    <img id="token-notice-img" src="images/app-icon.png" alt=""
+      style="width:72px;height:72px;border-radius:14px;image-rendering:pixelated;margin-bottom:12px;"
+      onerror="this.style.display='none'">
+    <h2>Keep Token Earned!</h2>
+    <div class="overlay-subtitle" id="token-notice-count"></div>
+    <div class="overlay-body">Head to the <strong>Keep</strong> tab to spend your token — unlock a new room or upgrade an existing one to its next stage.</div>
+    <button class="overlay-close" onclick="closeTokenNotice()">To the Keep!</button>
+  </div>
+</div>
+
 <!-- ── LEVEL-UP OVERLAY ─────────────────────────────────────────────────── -->
 <div class="overlay" id="levelup-overlay" style="display:none">
   <div class="overlay-box levelup-box">

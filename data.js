@@ -174,94 +174,34 @@ const FREQ_LABELS = {
 
 // What unlocks at specific levels (used for level-up overlay messages)
 const LEVEL_UNLOCKS = {
-  3:  "The Hearth has been unlocked in your Keep.",
-  6:  "The Kitchen has been unlocked in your Keep.",
-  8:  "The Main Hall has grown. A new stage awaits.",
   9:  "The Lore tab is now unlocked. Your story begins.",
-  11: "The Bedchamber has been unlocked in your Keep.",
-  13: "The Hearth has flourished into its second stage.",
-  14: "The Garden has been unlocked. It begins as a weed patch.",
-  16: "The Kitchen has reached its second stage.",
-  17: "The Bathing Chamber has been unlocked in your Keep.",
-  18: "The Main Hall has reached its finest stage.",
-  20: "The Cottage Exterior is now visible. Your keep has a shape.",
-  21: "The Bedchamber has grown into its second stage.",
-  22: "The Study has been unlocked in your Keep.",
-  24: "The Garden has blossomed into its second stage.",
-  25: "The Hearth blazes at its finest.",
-  27: "The Kitchen and Bathing Chamber reach their finest stages.",
-  28: "The Cellar has been unlocked in your Keep.",
-  30: "The Cottage Exterior has grown into its second stage.",
-  32: "The Tower has been unlocked in your Keep.",
-  33: "The Study has reached its second stage.",
-  35: "The Bedchamber has reached its finest stage.",
-  38: "The Garden reaches full bloom — its finest stage.",
-  40: "The Bathing Chamber reaches its finest stage.",
   41: "Legacy Quests have been unlocked — five great final challenges await.",
-  42: "The Tower has grown into its second stage.",
-  43: "The Cottage Exterior reaches its finest stage.",
-  45: "The Study reaches its finest stage.",
-  47: "The Cellar reaches its second stage.",
-  50: "You have reached the pinnacle. The Eternal Hearthkeeper. The Tower and Cellar reach their finest stage."
+  50: "You have reached the pinnacle. The Eternal Hearthkeeper."
 };
 
+// Levels that award a Keep Token
+const TOKEN_LEVELS = new Set([
+  2,3,4,5,6,7,8,9,10,11,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50
+]);
+
 const KEEP_ROOMS = [
-  {
-    id: "main_hall", name: "The Main Hall", emoji: "🏛️",
-    desc: "The heart of the keep. Cold and cobwebbed when you arrived, but yours from the first day.",
-    unlockLevel: 1, stage2Level: 8, stage3Level: 18
-  },
-  {
-    id: "hearth", name: "The Hearth", emoji: "🔥",
-    desc: "A fire burns here now. The keep breathes.",
-    unlockLevel: 3, stage2Level: 13, stage3Level: 25
-  },
-  {
-    id: "kitchen", name: "The Kitchen", emoji: "🍳",
-    desc: "Where sustenance is prepared. Smells of herbs and honest effort.",
-    unlockLevel: 6, stage2Level: 16, stage3Level: 27
-  },
-  {
-    id: "bedroom", name: "The Bedchamber", emoji: "🛏️",
-    desc: "A place of rest, earned through honest work.",
-    unlockLevel: 11, stage2Level: 21, stage3Level: 35
-  },
-  {
-    id: "garden", name: "The Garden", emoji: "🌱",
-    desc: "A weed patch for now. But there are seeds of something better here.",
-    unlockLevel: 14, stage2Level: 24, stage3Level: 38
-  },
-  {
-    id: "bathroom", name: "The Bathing Chamber", emoji: "🛁",
-    desc: "Clean water, clean stone. A small luxury that took real effort.",
-    unlockLevel: 17, stage2Level: 27, stage3Level: 40
-  },
-  {
-    id: "exterior", name: "The Cottage Exterior", emoji: "🏡",
-    desc: "Seen from outside for the first time. Your keep has a shape, a face, a presence.",
-    unlockLevel: 20, stage2Level: 30, stage3Level: 43
-  },
-  {
-    id: "study", name: "The Study", emoji: "📚",
-    desc: "A room for thought and record-keeping. The shelves await filling.",
-    unlockLevel: 22, stage2Level: 33, stage3Level: 45
-  },
-  {
-    id: "cellar", name: "The Cellar", emoji: "🪨",
-    desc: "Deep and cool. What secrets does the old stone hold?",
-    unlockLevel: 28, stage2Level: 38, stage3Level: 47
-  },
-  {
-    id: "tower", name: "The Tower", emoji: "🗼",
-    desc: "A personal sanctuary, high above the rest of the keep.",
-    unlockLevel: 32, stage2Level: 42, stage3Level: 50
-  }
+  { id:"main_hall", name:"The Main Hall",       emoji:"🏛️", desc:"The heart of the keep. Cold and cobwebbed when you arrived, but yours from the first day.", unlockLevel:1  },
+  { id:"hearth",    name:"The Hearth",           emoji:"🔥", desc:"A fire burns here now. The keep breathes.",                                                  unlockLevel:3  },
+  { id:"kitchen",   name:"The Kitchen",          emoji:"🍳", desc:"Where sustenance is prepared. Smells of herbs and honest effort.",                           unlockLevel:6  },
+  { id:"bedroom",   name:"The Bedchamber",       emoji:"🛏️", desc:"A place of rest, earned through honest work.",                                               unlockLevel:11 },
+  { id:"garden",    name:"The Garden",           emoji:"🌱", desc:"A weed patch for now. But there are seeds of something better here.",                        unlockLevel:14 },
+  { id:"bathroom",  name:"The Bathing Chamber",  emoji:"🛁", desc:"Clean water, clean stone. A small luxury that took real effort.",                            unlockLevel:17 },
+  { id:"exterior",  name:"The Cottage Exterior", emoji:"🏡", desc:"Seen from outside for the first time. Your keep has a shape, a face, a presence.",           unlockLevel:20 },
+  { id:"study",     name:"The Study",            emoji:"📚", desc:"A room for thought and record-keeping. The shelves await filling.",                          unlockLevel:22 },
+  { id:"cellar",    name:"The Cellar",           emoji:"🪨", desc:"Deep and cool. What secrets does the old stone hold?",                                       unlockLevel:28 },
+  { id:"tower",     name:"The Tower",            emoji:"🗼", desc:"A personal sanctuary, high above the rest of the keep.",                                     unlockLevel:32 }
 ];
 
-// Returns "stage1", "stage2", or "stage3" for a room given the current level
-function getRoomStage(room, level) {
-  if (level >= room.stage3Level) return "stage3";
-  if (level >= room.stage2Level) return "stage2";
+// Returns "stage1", "stage2", or "stage3" from saved room upgrade data
+function getRoomStage(roomId, roomStages) {
+  const s = (roomStages || {})[roomId] || 0;
+  if (s >= 2) return "stage3";
+  if (s >= 1) return "stage2";
   return "stage1";
 }
 

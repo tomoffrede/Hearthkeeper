@@ -1901,3 +1901,87 @@ a { color: var(--green); }
   max-width: 480px;
   text-align: left;
 }
+
+/* ── TOKEN BANNER & SPENDABLE ROOMS ────────────────────────────────────── */
+.token-banner {
+  background: var(--amber-light);
+  border: 1.5px solid var(--amber);
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--brown-dark);
+  margin-bottom: 16px;
+  grid-column: 1 / -1;
+}
+
+.keep-room.spendable {
+  border-color: var(--amber);
+  cursor: pointer;
+  box-shadow: 0 0 0 2px var(--amber-light);
+}
+
+.keep-room.spendable:hover {
+  border-color: var(--green);
+  box-shadow: 0 4px 16px var(--shadow);
+  transform: translateY(-2px);
+  transition: all 0.2s;
+}
+
+/* ── LORE CHARACTER CARD ────────────────────────────────────────────────── */
+.lore-char-card {
+  background: var(--cream);
+  border: 1.5px solid var(--brown-light);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.lore-char-portrait {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+  border: 2px solid var(--brown-light);
+}
+
+.lore-char-portrait-fallback {
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  background: var(--cream-dark);
+  border: 2px solid var(--brown-light);
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+}
+
+.lore-char-info h3 {
+  font-size: 18px;
+  color: var(--green);
+  margin-bottom: 4px;
+}
+
+.lore-char-epithet {
+  font-size: 12px;
+  color: var(--brown);
+  font-style: italic;
+  font-family: 'Lora', serif;
+  margin-bottom: 10px;
+}
+
+.lore-char-bio {
+  font-size: 13px;
+  color: var(--brown-dark);
+  line-height: 1.6;
+}
+
+@media (max-width: 540px) {
+  .lore-char-card { flex-direction: column; align-items: center; text-align: center; }
+  .lore-char-epithet { margin-bottom: 8px; }
+}
