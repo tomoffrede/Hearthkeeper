@@ -243,7 +243,10 @@
 
     <!-- KEEP -->
     <div class="tab-panel" id="tab-keep">
-      <h2 class="tab-title">Your Keep</h2>
+      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:4px;flex-wrap:wrap;">
+        <h2 class="tab-title" style="margin-bottom:0">Your Keep</h2>
+        <span id="keep-heading-condition" style="font-size:13px;color:var(--brown);font-style:italic;font-family:'Lora',serif;"></span>
+      </div>
       <p class="tab-subtitle">The state of your home, as seen by those who dwell within it.</p>
       <div class="keep-grid" id="keep-grid"></div>
     </div>

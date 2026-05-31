@@ -268,7 +268,7 @@ window.confirmCharacter = async function() {
   const starterQuests = DEFAULT_STARTER_IDS
     .map(id => DEFAULT_QUESTS.find(q=>q.id===id)).filter(Boolean)
     .map(q => ({...q, lastCompleted:null}));
-  gameData = { character:charId, xp:0, level:1, quests:starterQuests, history:[], loreRead:[], keepTokens:0, roomStages:{}, createdAt:Date.now() };
+  gameData = { character:charId, xp:0, level:1, quests:starterQuests, history:[], loreRead:[], keepTokens:0, roomStages:{ main_hall: 0 }, createdAt:Date.now() };
   await saveGameData();
   initApp();
 };
@@ -556,12 +556,18 @@ function renderKeep() {
     ? `<div class="token-banner">🪙 You have <strong>${tokens}</strong> Keep Token${tokens !== 1 ? "s" : ""} to spend. Click a room to unlock or upgrade it.</div>`
     : "";
 
+  const conditionLabel = condition === "clean" ? "✨ Well kept" : condition === "dusty" ? "🌫 Could use attention" : "⚠ Neglected";
+  const keepHeading = document.getElementById("keep-heading-condition");
+  if (keepHeading) keepHeading.textContent = conditionLabel;
+
   grid.innerHTML = tokenBanner + KEEP_ROOMS.map(room => {
-    const locked      = gameData.level < room.unlockLevel;
+    const hasEntry    = room.id in (gameData.roomStages || {});
+    const locked      = !hasEntry && room.id !== "main_hall";
     const stageNum    = (gameData.roomStages || {})[room.id] || 0;
     const stage       = stageNum >= 2 ? "stage3" : stageNum >= 1 ? "stage2" : "stage1";
     const fullyUpgraded = stageNum >= 2;
-    const canSpend    = tokens > 0 && (locked || !fullyUpgraded);
+    const levelMet    = gameData.level >= room.unlockLevel;
+    const canSpend    = tokens > 0 && levelMet && (locked || !fullyUpgraded);
 
     if (locked) {
       return `<div class="keep-room locked${canSpend ? " spendable" : ""}" ${canSpend ? `onclick="spendToken('${room.id}')"` : ""}>
@@ -587,7 +593,6 @@ function renderKeep() {
       </div>
       <h3>${room.name}</h3>
       <p>${room.desc}</p>
-      <div class="keep-condition-label">${conditionLabel}</div>
       <div class="keep-stage-label">${stageLabel}</div>
     </div>`;
   }).join("");
@@ -597,7 +602,8 @@ window.spendToken = async function(roomId) {
   if (!gameData.keepTokens || gameData.keepTokens < 1) return;
   const room     = KEEP_ROOMS.find(r => r.id === roomId);
   if (!room) return;
-  const locked   = gameData.level < room.unlockLevel;
+  const hasEntry = roomId in (gameData.roomStages || {});
+  const locked   = !hasEntry && roomId !== "main_hall";
   const stageNum = (gameData.roomStages || {})[roomId] || 0;
   if (!locked && stageNum >= 2) return; // already fully upgraded
 
@@ -630,7 +636,6 @@ window.openKeepRoom = function(roomId, imgSrc, roomName, stage, condition) {
         onerror="this.style.display='none'">
       <h2 style="font-size:18px;margin-bottom:4px">${roomName}</h2>
       <div style="display:flex;gap:10px;margin-bottom:16px">
-        <span class="keep-condition-label">${conditionLabel}</span>
         <span class="keep-stage-label">${stageLabel}</span>
       </div>
       <button class="overlay-close" onclick="document.getElementById('keep-room-overlay').remove()">Close</button>
