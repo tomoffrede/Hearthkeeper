@@ -513,10 +513,16 @@ function renderLore() {
   if (!list||!gameData) return;
   const char = CHARACTERS[gameData.character];
   const charCard = `<div class="lore-char-card">
-    <img src="images/char-${gameData.character}.png" alt="${char.name}"
-      class="lore-char-portrait"
-      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-    <div class="lore-char-portrait-fallback" style="display:none">${char.emoji}</div>
+    <div class="lore-char-portrait-wrap">
+      <img src="images/char-${gameData.character}.png" alt="${char.name}"
+        class="lore-char-portrait"
+        onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="lore-char-portrait-fallback" style="display:none">${char.emoji}</div>
+      <span class="lore-char-portrait-corner tl">✦</span>
+      <span class="lore-char-portrait-corner tr">✦</span>
+      <span class="lore-char-portrait-corner bl">✦</span>
+      <span class="lore-char-portrait-corner br">✦</span>
+    </div>
     <div class="lore-char-info">
       <h3>${char.name}</h3>
       <div class="lore-char-epithet">${char.epithet}</div>
