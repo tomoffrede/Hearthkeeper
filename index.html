@@ -178,7 +178,7 @@
     <button class="nav-btn"        onclick="switchTab('keep')">🏰 Keep</button>
     <button class="nav-btn"        onclick="switchTab('lore')">📜 Lore</button>
     <button class="nav-btn"        onclick="switchTab('history')">📖 History</button>
-    <button class="nav-btn"        onclick="switchTab('settings')">⚙️ Settings</button>
+    <button class="nav-btn"        onclick="switchTab('settings')">⚙️ Settings & Info</button>
   </nav>
   </div>
 
@@ -267,8 +267,8 @@
 
     <!-- SETTINGS -->
     <div class="tab-panel" id="tab-settings">
-      <h2 class="tab-title">Settings</h2>
-      <p class="tab-subtitle">Manage your account and preferences.</p>
+      <h2 class="tab-title">Settings & Information</h2>
+      <p class="tab-subtitle">Manage your account and find helpful information.</p>
       <div class="settings-section">
         <h3>Account</h3>
         <p class="settings-desc">Signed in as <strong id="settings-username"></strong></p>
@@ -288,6 +288,17 @@
           <div class="auth-error" id="delete-error"></div>
         </div>
       </div>
+      <div class="settings-section">
+        <h3>📱 Add to Home Screen</h3>
+        <p class="settings-desc">You can save The Hearthkeeper's website to your phone's home screen for quick access — it will look and feel like a regular app, and will automatically use the Hearthkeeper icon.</p>
+
+        <p class="settings-desc" style="margin-top:10px"><strong>On iPhone (Safari):</strong><br>
+        Tap the <strong>Share</strong> button (the square with an arrow pointing up) at the bottom of the screen, then scroll down and tap <strong>Add to Home Screen</strong>. Tap <strong>Add</strong> to confirm.</p>
+
+        <p class="settings-desc"><strong>On Android (Chrome):</strong><br>
+        Tap the <strong>three-dot menu</strong> (⋮) in the top right corner of Chrome, then tap <strong>Add to Home screen</strong> or <strong>Install app</strong>. Tap <strong>Add</strong> to confirm.</p>
+      </div>
+
       <div class="settings-section">
         <h3>Legal</h3>
         <div style="display:flex;gap:12px;flex-wrap:wrap">
