@@ -436,8 +436,10 @@ function showNextLevelUp() {
   if (!pendingLevelUps.length) { checkAndShowTokenNotice(); return; }
   const lv   = pendingLevelUps.shift();
   const char = CHARACTERS[gameData.character];
-  document.getElementById("levelup-img").src = `images/levelup-${gameData.character}.png`;
-  document.getElementById("levelup-img").alt = char.name;
+  const lvImg = document.getElementById("levelup-img");
+  lvImg.style.display = "block";
+  lvImg.src = `images/levelup-${gameData.character}.png`;
+  lvImg.alt = char.name;
   document.getElementById("levelup-heading").textContent = "Level Up!";
   document.getElementById("levelup-title").textContent   = `${char.name} · ${getTitleForLevel(gameData.character, lv)}`;
   document.getElementById("levelup-body").textContent    = LEVEL_UNLOCKS[lv] || `You have reached Level ${lv}. The keep grows stronger.`;
