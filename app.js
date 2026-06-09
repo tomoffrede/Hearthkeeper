@@ -569,14 +569,14 @@ function renderKeep() {
     const stage       = stageNum >= 2 ? "stage3" : stageNum >= 1 ? "stage2" : "stage1";
     const fullyUpgraded = stageNum >= 2;
     const levelMet    = gameData.level >= room.unlockLevel;
-    const canSpend    = tokens > 0 && levelMet && (locked || !fullyUpgraded);
+    const canSpend    = tokens > 0 && (locked || !fullyUpgraded);
 
     if (locked) {
       return `<div class="keep-room locked${canSpend ? " spendable" : ""}" ${canSpend ? `onclick="spendToken('${room.id}')"` : ""}>
         <div style="width:100%;height:120px;display:flex;align-items:center;justify-content:center;font-size:48px;background:var(--cream-dark);border-radius:10px;margin-bottom:10px;">${canSpend ? "🔓" : "🔒"}</div>
         <h3>${room.name}</h3>
         <p>${room.desc}</p>
-        <div class="keep-lock-label">${canSpend ? "🪙 Tap to unlock" : `Requires Level ${room.unlockLevel}`}</div>
+        <div class="keep-lock-label">${canSpend ? "🪙 Tap to unlock" : "Spend a Keep Token to unlock"}</div>
       </div>`;
     }
 
@@ -626,7 +626,7 @@ window.openKeepRoom = function(roomId, imgSrc, roomName, stage, condition) {
   if (existing) existing.remove();
   const stageLabel = stage === "stage3"
     ? `${roomName} is at its finest.`
-    : `Spend a Keep Token to upgrade your ${roomName.toLowerCase()}.`;
+    : `Spend a Keep Token to upgrade ${roomName}.`;
   const conditionLabel = condition === "clean" ? "✨ Well kept" : condition === "dusty" ? "🌫 Could use attention" : "⚠ Neglected";
   const overlay = document.createElement("div");
   overlay.id = "keep-room-overlay";
