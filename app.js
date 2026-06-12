@@ -491,12 +491,46 @@ function showNextLore() {
   if (!pendingLore.length) return;
   const s=pendingLore[0];
   document.getElementById("lore-overlay-title").textContent    = s.title;
-  document.getElementById("lore-overlay-subtitle").textContent = `Chapter unlocked at Level ${s.level}`;
+  document.getElementById("lore-overlay-subtitle").textContent = `A new chapter unlocked`;
   document.getElementById("lore-overlay-body").textContent     = s.text;
-  document.getElementById("lore-overlay").style.display        = "flex";
+  const imgEl = document.getElementById("lore-overlay-img");
+  if (s.image) { imgEl.src = s.image; imgEl.style.display = "block"; }
+  else { imgEl.style.display = "none"; }
+  document.getElementById("lore-overlay").style.display = "flex";
 }
 
 window.openLoreBell = function() { if (pendingLore.length) showNextLore(); else switchTab("lore"); };
+
+window.goToLoreTab = async function() {
+  if (pendingLore.length) {
+    const s=pendingLore.shift();
+    if (!gameData.loreRead.includes(s.level)) { gameData.loreRead.push(s.level); await saveGameData(); }
+  }
+  document.getElementById("lore-overlay").style.display="none";
+  const bell=document.getElementById("lore-bell");
+  if (pendingLore.length) bell.classList.add("visible"); else bell.classList.remove("visible");
+  renderLore();
+  switchTab("lore");
+};
+
+window.openLoreImg = function(src) {
+  const existing = document.getElementById("lore-img-overlay");
+  if (existing) existing.remove();
+  const overlay = document.createElement("div");
+  overlay.id = "lore-img-overlay";
+  overlay.innerHTML = `
+    <div class="portrait-frame" onclick="event.stopPropagation()">
+      <img src="${src}" alt=""
+        style="display:block;width:280px;height:280px;object-fit:cover;image-rendering:pixelated;border-radius:4px;position:relative;z-index:1;"
+        onerror="this.style.display='none'">
+      <span class="portrait-corner tl">✦</span>
+      <span class="portrait-corner tr">✦</span>
+      <span class="portrait-corner bl">✦</span>
+      <span class="portrait-corner br">✦</span>
+    </div>`;
+  overlay.addEventListener("click", () => overlay.remove());
+  document.body.appendChild(overlay);
+};
 
 window.closeLoreOverlay = async function() {
   if (pendingLore.length) {
@@ -535,7 +569,7 @@ function renderLore() {
   (LORE[gameData.character]||[]).forEach(s=>{
     if (gameData.level>=s.level) {
       const imgHtml = s.image
-        ? `<img src="${s.image}" alt="" class="lore-img" onerror="this.style.display='none'">`
+        ? `<img src="${s.image}" alt="" class="lore-img" style="cursor:pointer" onclick="openLoreImg('${s.image}')" onerror="this.style.display='none'">`
         : "";
       html+=`<div class="lore-scroll">${imgHtml}<h3>${s.title}</h3><div class="lore-unlock-label">Unlocked at Level ${s.level}</div><p>${s.text}</p></div>`;
     } else

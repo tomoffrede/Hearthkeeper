@@ -338,12 +338,16 @@
 
 <!-- ── LORE OVERLAY ─────────────────────────────────────────────────────── -->
 <div class="overlay" id="lore-overlay" style="display:none">
-  <div class="overlay-box">
+  <div class="overlay-box lore-overlay-box">
+    <img id="lore-overlay-img" src="" alt="" class="lore-overlay-img" style="display:none" onerror="this.style.display='none'">
     <span class="overlay-icon">📜</span>
     <h2 id="lore-overlay-title">A New Chapter</h2>
     <div class="overlay-subtitle" id="lore-overlay-subtitle"></div>
     <div class="overlay-body"     id="lore-overlay-body"></div>
-    <button class="overlay-close" onclick="closeLoreOverlay()">Close the Scroll</button>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="overlay-close" onclick="closeLoreOverlay()">Close the Scroll</button>
+      <button class="overlay-close" style="background:var(--brown)" onclick="goToLoreTab()">Go to Lore ↗</button>
+    </div>
   </div>
 </div>
 
